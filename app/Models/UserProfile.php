@@ -1,0 +1,31 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+
+class UserProfile extends Model
+{
+    protected $fillable = [
+        'user_id',
+        'first_name',
+        'last_name',
+        'phone',
+        'birth_date',
+        'gender',
+        'profile_photo',
+        'country',
+        'state',
+        'city'
+    ];
+
+    protected $casts = [
+        'birth_date' => 'date',
+    ];
+
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
+    }
+}
