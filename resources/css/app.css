@@ -1,3 +1,27 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+
+    body {
+
+        @apply bg-background text-text antialiased;
+
+    }
+}
+
+@layer components {
+
+    .btn-primary {
+        @apply bg-primary hover:bg-primary-hover text-white rounded-button px-5 py-3 font-semibold transition-all duration-200 shadow-soft;
+    }
+
+    .btn-secondary {
+        @apply bg-surface border border-border text-text rounded-button px-5 py-3 transition-all;
+    }
+
+    .input {
+        @apply w-full rounded-input border border-border px-4 py-3 focus:border-primary focus:ring-primary;
+    }
+}
