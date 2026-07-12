@@ -70,7 +70,8 @@ php artisan serve
 
 ## Author's
 
-Isbak Jahel Ortiz Yepez
-Alan Gerardo Sanchez Martinez
-Brayan Ulises Palmillas Carrillo
-Nicxon Abisai Vazquez Lopez
+Isbak Jahel Ortiz Yepez <br>
+Alan Gerardo Sanchez Martinez <br>
+Brayan Ulises Palmillas Carrillo <br>
+Nicxon Abisai Vazquez Lopez <br>
+Ivan Alejandro Vazquez Pozos
