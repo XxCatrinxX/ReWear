@@ -3,25 +3,114 @@
 @tailwind utilities;
 
 @layer base {
-
     body {
-
         @apply bg-background text-text antialiased;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+    }
 
+    h1, h2, h3, h4, h5, h6 {
+        @apply font-outfit;
+    }
+
+    /* Scrollbar custom */
+    .custom-scrollbar::-webkit-scrollbar {
+        width: 6px;
+        height: 6px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+        @apply bg-background rounded-full;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+        @apply bg-border rounded-full;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+        @apply bg-muted;
     }
 }
 
 @layer components {
-
+    /* Buttons */
     .btn-primary {
-        @apply bg-primary hover:bg-primary-hover text-white rounded-button px-5 py-3 font-semibold transition-all duration-200 shadow-soft;
+        @apply bg-primary hover:bg-primary-hover text-white rounded-button px-5 py-3 font-semibold transition-all duration-200 shadow-soft inline-flex items-center justify-center gap-2;
     }
 
     .btn-secondary {
-        @apply bg-surface border border-border text-text rounded-button px-5 py-3 transition-all;
+        @apply bg-surface border border-border text-text rounded-button px-5 py-3 transition-all hover:bg-background inline-flex items-center justify-center gap-2;
     }
 
+    .btn-danger {
+        @apply bg-danger hover:opacity-90 text-white rounded-button px-5 py-3 font-semibold transition-all duration-200 inline-flex items-center justify-center gap-2;
+    }
+
+    /* Form inputs */
     .input {
-        @apply w-full rounded-input border border-border px-4 py-3 focus:border-primary focus:ring-primary;
+        @apply w-full rounded-input border border-border bg-background px-4 py-3 focus:border-primary focus:ring-1 focus:ring-primary/20 transition-colors text-sm placeholder:text-muted;
+    }
+
+    /* Cards */
+    .card {
+        @apply bg-surface rounded-card shadow-soft border border-border;
+    }
+
+    /* Product card hover effect */
+    .product-card {
+        @apply transition-all duration-300 hover:-translate-y-1 hover:shadow-card;
+    }
+
+    /* Badge variants */
+    .badge {
+        @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold;
+    }
+    .badge-green {
+        @apply badge bg-success/10 text-success;
+    }
+    .badge-yellow {
+        @apply badge bg-warning/10 text-warning;
+    }
+    .badge-red {
+        @apply badge bg-danger/10 text-danger;
+    }
+    .badge-gray {
+        @apply badge bg-muted/10 text-muted;
+    }
+    .badge-accent {
+        @apply badge bg-accent/10 text-accent;
+    }
+
+    /* Section headers */
+    .section-title {
+        @apply font-outfit font-bold text-2xl md:text-3xl text-text;
+    }
+
+    /* Skeleton loading */
+    .skeleton {
+        @apply animate-pulse bg-border rounded-xl;
+    }
+
+    /* Line clamp utilities */
+    .line-clamp-1 {
+        overflow: hidden;
+        display: -webkit-box;
+        -webkit-line-clamp: 1;
+        -webkit-box-orient: vertical;
+    }
+    .line-clamp-2 {
+        overflow: hidden;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+    }
+
+    /* Pagination */
+    .pagination-wrapper .pagination {
+        @apply flex items-center gap-2;
+    }
+    .pagination-wrapper .pagination span,
+    .pagination-wrapper .pagination a {
+        @apply px-3 py-2 text-sm rounded-lg border border-border text-muted transition-colors hover:border-primary hover:text-primary;
+    }
+    .pagination-wrapper .pagination .active span {
+        @apply bg-primary text-white border-primary;
     }
 }

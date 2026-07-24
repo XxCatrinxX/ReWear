@@ -14,10 +14,9 @@ class UserProfile extends Model
         'phone',
         'birth_date',
         'gender',
-        'profile_photo',
         'country',
         'state',
-        'city'
+        'city',
     ];
 
     protected $casts = [
@@ -27,5 +26,10 @@ class UserProfile extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function getFullNameAttribute(): string
+    {
+        return trim("{$this->first_name} {$this->last_name}");
     }
 }
