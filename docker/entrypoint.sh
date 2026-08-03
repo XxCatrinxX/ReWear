@@ -1,8 +1,8 @@
 #!/bin/bash
 set -e
 
-# Reemplazar la variable PORT en el archivo de Nginx
-envsubst '$PORT' < /etc/nginx/conf.d/default.conf.template > /etc/nginx/conf.d/default.conf
+# Reemplazar la variable PORT en el archivo principal de Nginx
+envsubst '$PORT' < /etc/nginx/nginx.conf.template > /etc/nginx/nginx.conf
 
 # Crear enlace simbólico de almacenamiento si no existe
 php artisan storage:link || true

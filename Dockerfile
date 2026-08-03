@@ -40,9 +40,9 @@ COPY --from=frontend --chown=www-data:www-data /app/public/build /var/www/html/p
 RUN chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
 
 # Copiar configuración de Nginx y entrypoint
-COPY docker/nginx.conf /etc/nginx/conf.d/default.conf.template
+COPY docker/nginx.conf /etc/nginx/nginx.conf.template
 COPY docker/entrypoint.sh /usr/local/bin/entrypoint.sh
-RUN chmod +x /usr/local/bin/entrypoint.sh
+RUN chmod +x /usr/local/bin/entrypoint.sh && rm -f /etc/nginx/conf.d/default.conf
 
 # Puerto asignado dinámicamente por Railway
 ENV PORT=80
