@@ -21,4 +21,5 @@ echo "ReWear iniciado correctamente para Railway."
 
 # Iniciar PHP-FPM en segundo plano y Nginx en primer plano
 php-fpm -D
+sleep 1
 exec nginx -g 'daemon off;'

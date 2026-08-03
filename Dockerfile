@@ -39,8 +39,9 @@ COPY --from=frontend --chown=www-data:www-data /app/public/build /var/www/html/p
 # Configurar permisos para storage y bootstrap/cache
 RUN chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
 
-# Copiar configuración de Nginx y entrypoint
+# Copiar configuración de Nginx, PHP-FPM y entrypoint
 COPY docker/nginx.conf /etc/nginx/nginx.conf.template
+COPY docker/php-fpm.conf /usr/local/etc/php-fpm.d/zz-docker.conf
 COPY docker/entrypoint.sh /usr/local/bin/entrypoint.sh
 RUN chmod +x /usr/local/bin/entrypoint.sh && rm -f /etc/nginx/conf.d/default.conf
 
