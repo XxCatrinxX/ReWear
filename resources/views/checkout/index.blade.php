@@ -4,7 +4,7 @@
 @section('content')
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8" x-data="{
     showNewAddressForm: {{ $addresses->count() == 0 ? 'true' : 'false' }},
-    selectedAddress: {{ $addresses->where('is_default', true)->first()??($addresses->first()?->id ?? 'null') }},
+    selectedAddress: '{{ $addresses->where('is_default', true)->first()?->id ?? ($addresses->first()?->id ?? '') }}',
     cardType: 'credito',
     cardNumber: '',
     detectedBank: 'Desconocido',
@@ -81,12 +81,20 @@
                 </div>
 
                 <!-- Selección de Dirección Existente -->
-                @if($addresses->count() > 0)
+                                @if($addresses->count() > 0)
                     <div x-show="!showNewAddressForm" class="space-y-4">
+
+                        @error('address_id')
+                            <div class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl text-sm flex items-center gap-2">
+                                <i class='bx bx-error-circle text-lg'></i>
+                                <span>{{ $message }}</span>
+                            </div>
+                        @enderror
+
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             @foreach($addresses as $address)
                                 <label class="relative flex cursor-pointer rounded-2xl border bg-white p-4 focus:outline-none transition-colors"
-                                       :class="selectedAddress == {{ $address->id }} ? 'border-[#2E7D32] bg-[#F8FAF7]' : 'border-[#E5E7EB] hover:bg-gray-50'">
+                                       :class="selectedAddress == '{{ $address->id }}' ? 'border-[#2E7D32] bg-[#F8FAF7]' : 'border-[#E5E7EB] hover:bg-gray-50'">
                                     <input type="radio" name="address_id" value="{{ $address->id }}" class="sr-only" x-model="selectedAddress" @click="showNewAddressForm = false">
                                     <span class="flex flex-1">
                                         <span class="flex flex-col">
@@ -105,11 +113,11 @@
                                             </span>
                                         </span>
                                     </span>
-                                    <i class='bx bxs-check-circle text-2xl text-[#2E7D32] absolute top-4 right-4' x-show="selectedAddress == {{ $address->id }}"></i>
+                                    <i class='bx bxs-check-circle text-2xl text-[#2E7D32] absolute top-4 right-4' x-show="selectedAddress == '{{ $address->id }}'"></i>
                                 </label>
                             @endforeach
                         </div>
-                        <button type="button" @click="showNewAddressForm = true; selectedAddress = null" class="text-sm font-medium text-[#2E7D32] hover:underline flex items-center gap-1">
+                        <button type="button" @click="showNewAddressForm = true; selectedAddress = ''" class="text-sm font-medium text-[#2E7D32] hover:underline flex items-center gap-1">
                             <i class='bx bx-plus-circle'></i> Registrar otra dirección
                         </button>
                     </div>

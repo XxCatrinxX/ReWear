@@ -98,10 +98,12 @@ class CheckoutService
                 'paid_at'         => now(),
             ]);
 
-            // Crear envío pendiente
+            // Crear envío pendiente (con código de rastreo pre-generado)
             Shipment::create([
-                'order_id' => $order->id,
-                'status'   => 'preparando',
+                'order_id'       => $order->id,
+                'status'         => 'preparando',
+                'carrier'        => 'ReWear Delivery',
+                'tracking_number'=> 'RW-' . strtoupper(Str::random(10)),
             ]);
 
             // Vaciar carrito

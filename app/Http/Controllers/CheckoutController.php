@@ -48,10 +48,20 @@ class CheckoutController extends Controller
             'card_cvv'    => ['required', 'string', 'min:3', 'max:4'],
         ];
 
-        // Validar dirección existente o nueva
-        if ($request->has('address_id') && $request->address_id !== null && $request->address_id !== 'null') {
-            $rules['address_id'] = ['required', 'exists:addresses,id'];
+        $hasAddresses    = $user->addresses()->exists();
+        $addressIdSent   = $request->filled('address_id') && $request->address_id !== 'null';
+        $newAddressMode  = $request->boolean('new_address') || !$hasAddresses || (!$addressIdSent && $hasAddresses && $request->filled('street'));
+
+        if ($addressIdSent) {
+            // Usar dirección existente
+            $rules['address_id'] = ['required', 'integer', 'exists:addresses,id'];
+        } elseif ($hasAddresses && !$newAddressMode) {
+            // Tiene direcciones pero no seleccionó ninguna y no llenó formulario nuevo
+            return redirect()->back()
+                ->withInput()
+                ->withErrors(['address_id' => 'Por favor selecciona una dirección de envío o registra una nueva.']);
         } else {
+            // Nueva dirección
             $rules['label']           = ['required', 'string', 'max:50'];
             $rules['recipient_name']  = ['required', 'string', 'max:150'];
             $rules['phone']           = ['required', 'string', 'max:20'];

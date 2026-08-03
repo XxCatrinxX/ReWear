@@ -20,6 +20,7 @@ use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\SellerWalletController;
 use App\Http\Controllers\ProductQuestionController;
+use App\Http\Controllers\OrderMessageController;
 
 /*
 |--------------------------------------------------------------------------
@@ -77,6 +78,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/orders/{order}', [OrderController::class, 'show'])->name('orders.show');
     Route::get('/orders/{order}/confirm-delivery', [OrderController::class, 'confirmDeliveryPage'])->name('orders.confirm-delivery');
     Route::post('/orders/{order}/confirm-delivery', [OrderController::class, 'processConfirmDelivery'])->name('orders.confirm-delivery.store');
+
+    // Chat del pedido (comprador y vendedor comparten el mismo controlador)
+    Route::get('/orders/{order}/messages', [OrderMessageController::class, 'index'])->name('orders.messages.index');
+    Route::post('/orders/{order}/messages', [OrderMessageController::class, 'store'])->name('orders.messages.store');
 });
 
 /*
@@ -97,6 +102,10 @@ Route::middleware(['auth', 'verified', 'seller'])->prefix('seller')->name('selle
     Route::get('/orders/{order}', [SellerController::class, 'ordersShow'])->name('orders.show');
     Route::post('/orders/{order}/ship', [SellerController::class, 'shipOrder'])->name('orders.ship');
     Route::get('/orders/{order}/label', [SellerController::class, 'printLabel'])->name('orders.label');
+
+    // Chat del pedido (vendedor)
+    Route::get('/orders/{order}/messages', [OrderMessageController::class, 'index'])->name('orders.messages.index');
+    Route::post('/orders/{order}/messages', [OrderMessageController::class, 'store'])->name('orders.messages.store');
 
     Route::get('/products', [SellerController::class, 'index'])->name('products.index');
     Route::get('/products/create', [SellerController::class, 'create'])->name('products.create');

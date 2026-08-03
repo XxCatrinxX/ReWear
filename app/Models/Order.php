@@ -44,6 +44,16 @@ class Order extends Model
         return self::$statuses[$this->status]['color'] ?? 'secondary';
     }
 
+    public function getFormattedTotalAttribute(): string
+    {
+        return '$' . number_format((float) $this->total, 2);
+    }
+
+    public function getFormattedSubtotalAttribute(): string
+    {
+        return '$' . number_format((float) $this->subtotal, 2);
+    }
+
     // ─── Relaciones ─────────────────────────────────────────────────────────────
 
     public function buyer(): BelongsTo
@@ -69,5 +79,10 @@ class Order extends Model
     public function shipment(): HasOne
     {
         return $this->hasOne(Shipment::class);
+    }
+
+    public function messages(): HasMany
+    {
+        return $this->hasMany(OrderMessage::class)->orderBy('created_at', 'asc');
     }
 }

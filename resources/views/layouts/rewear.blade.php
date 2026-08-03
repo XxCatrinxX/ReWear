@@ -2,8 +2,18 @@
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="csrf-token" content="{{ csrf_token() }}">
+
+    <!-- PWA Meta Tags & Icons -->
+    <meta name="theme-color" content="#2E7D32">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="ReWear">
+    <link rel="manifest" href="/manifest.json">
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <link rel="apple-touch-icon" href="/images/pwa/icon-192.png">
 
     <title>{{ config('app.name', 'ReWear') }} - @yield('title', 'Marketplace de ropa de segunda mano')</title>
 
@@ -18,7 +28,7 @@
     <!-- Styles / Scripts -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body class="font-sans antialiased bg-[#F8FAF7] text-[#263238] min-h-screen flex flex-col selection:bg-[#D4A373] selection:text-white">
+<body class="font-sans antialiased bg-[#F8FAF7] text-[#263238] min-h-screen flex flex-col selection:bg-[#D4A373] selection:text-white pb-20 md:pb-0">
     
     <!-- Navbar -->
     <nav class="bg-white/80 backdrop-blur-md sticky top-0 z-50 border-b border-[#E5E7EB] shadow-sm" x-data="{ mobileMenuOpen: false }">
@@ -261,5 +271,119 @@
             </div>
         </div>
     </footer>
+
+    <!-- ───────────────── BARRA NAVEGACIÓN INFERIOR MÓVIL (ANDROID / PWA) ───────────────── -->
+    <nav class="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-lg border-t border-[#E5E7EB] px-2 py-1.5 shadow-card flex justify-around items-center">
+        <a href="{{ route('home') }}" class="flex flex-col items-center py-1 px-3 text-xs font-medium {{ request()->routeIs('home') ? 'text-[#2E7D32]' : 'text-[#607D8B]' }}">
+            <i class='bx {{ request()->routeIs('home') ? 'bxs-home' : 'bx-home' }} text-2xl mb-0.5'></i>
+            <span>Inicio</span>
+        </a>
+
+        <a href="{{ route('catalog') }}" class="flex flex-col items-center py-1 px-3 text-xs font-medium {{ request()->routeIs('catalog*') ? 'text-[#2E7D32]' : 'text-[#607D8B]' }}">
+            <i class='bx {{ request()->routeIs('catalog*') ? 'bxs-store' : 'bx-store' }} text-2xl mb-0.5'></i>
+            <span>Catálogo</span>
+        </a>
+
+        @auth
+            <a href="{{ route('seller.products.create') }}" class="flex flex-col items-center py-1 px-3 text-xs font-semibold text-[#D4A373]">
+                <div class="w-10 h-10 -mt-5 bg-[#D4A373] text-white rounded-full flex items-center justify-center shadow-lg border-2 border-white">
+                    <i class='bx bx-plus text-2xl'></i>
+                </div>
+                <span class="mt-0.5">Vender</span>
+            </a>
+
+            <a href="{{ route('cart.index') }}" class="flex flex-col items-center py-1 px-3 text-xs font-medium relative {{ request()->routeIs('cart*') ? 'text-[#2E7D32]' : 'text-[#607D8B]' }}">
+                <div class="relative">
+                    <i class='bx {{ request()->routeIs('cart*') ? 'bxs-shopping-bag' : 'bx-shopping-bag' }} text-2xl mb-0.5'></i>
+                    @php $cartCountBottom = auth()->user()->cart ? auth()->user()->cart->items->sum('quantity') : 0; @endphp
+                    @if($cartCountBottom > 0)
+                        <span class="absolute -top-1 -right-2 w-4 h-4 bg-[#D4A373] text-white text-[9px] font-bold flex items-center justify-center rounded-full">
+                            {{ $cartCountBottom }}
+                        </span>
+                    @endif
+                </div>
+                <span>Carrito</span>
+            </a>
+
+            <a href="{{ route('dashboard') }}" class="flex flex-col items-center py-1 px-3 text-xs font-medium {{ request()->routeIs('dashboard', 'orders*', 'profile*') ? 'text-[#2E7D32]' : 'text-[#607D8B]' }}">
+                <i class='bx {{ request()->routeIs('dashboard', 'orders*', 'profile*') ? 'bxs-user' : 'bx-user' }} text-2xl mb-0.5'></i>
+                <span>Mi Cuenta</span>
+            </a>
+        @else
+            <a href="{{ route('login') }}" class="flex flex-col items-center py-1 px-3 text-xs font-medium text-[#2E7D32]">
+                <i class='bx bx-log-in text-2xl mb-0.5'></i>
+                <span>Ingresar</span>
+            </a>
+        @endauth
+    </nav>
+
+    <!-- Banner de Instalación PWA (Android / Mobile) -->
+    <div id="pwa-install-banner" class="hidden fixed bottom-16 left-4 right-4 z-50 bg-[#263238] text-white p-4 rounded-2xl shadow-xl flex items-center justify-between gap-3 border border-white/10 md:hidden">
+        <div class="flex items-center gap-3">
+            <div class="w-10 h-10 bg-[#2E7D32] rounded-xl flex items-center justify-center font-bold text-lg text-white flex-shrink-0">
+                RW
+            </div>
+            <div>
+                <p class="font-bold text-sm leading-tight">Instalar ReWear App</p>
+                <p class="text-xs text-gray-300">Acceso rápido desde tu pantalla principal</p>
+            </div>
+        </div>
+        <div class="flex items-center gap-2">
+            <button id="pwa-install-btn" class="bg-[#2E7D32] hover:bg-[#1B5E20] text-white px-3 py-1.5 rounded-xl text-xs font-bold transition">
+                Instalar
+            </button>
+            <button id="pwa-close-btn" class="text-gray-400 hover:text-white p-1">
+                <i class='bx bx-x text-xl'></i>
+            </button>
+        </div>
+    </div>
+
+    @stack('scripts')
+
+    <!-- Registro de Service Worker PWA -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function() {
+                navigator.serviceWorker.register('/sw.js').then(function(registration) {
+                    console.log('ServiceWorker registrado con éxito en scope:', registration.scope);
+                }, function(err) {
+                    console.log('Error en registro de ServiceWorker:', err);
+                });
+            });
+        }
+
+        // Manejo del banner de instalación PWA en Android
+        let deferredPrompt;
+        const installBanner = document.getElementById('pwa-install-banner');
+        const installBtn = document.getElementById('pwa-install-btn');
+        const closeBtn = document.getElementById('pwa-close-btn');
+
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            if (installBanner && !localStorage.getItem('pwa_banner_dismissed')) {
+                installBanner.classList.remove('hidden');
+            }
+        });
+
+        if (installBtn) {
+            installBtn.addEventListener('click', async () => {
+                if (deferredPrompt) {
+                    deferredPrompt.prompt();
+                    const { outcome } = await deferredPrompt.userChoice;
+                    console.log(`PWA Prompt outcome: ${outcome}`);
+                    deferredPrompt = null;
+                }
+                installBanner.classList.add('hidden');
+            });
+        }
+
+        if (closeBtn) {
+            closeBtn.addEventListener('click', () => {
+                installBanner.classList.add('hidden');
+                localStorage.setItem('pwa_banner_dismissed', 'true');
+            });
+        }
+    </script>
 </body>
 </html>

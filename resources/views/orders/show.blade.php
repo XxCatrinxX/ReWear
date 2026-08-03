@@ -104,6 +104,55 @@
             </div>
             @endif
 
+            <!-- ───────────────── CHAT ───────────────── -->
+            @if($order->status !== 'pendiente' && $order->status !== 'cancelado')
+            <div class="bg-white rounded-3xl shadow-sm border border-[#E5E7EB] overflow-hidden" id="chat-card">
+                <!-- Header del chat -->
+                <div class="p-5 border-b border-[#E5E7EB] bg-gradient-to-r from-[#F8FAF7] to-white flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-full bg-[#2E7D32]/10 flex items-center justify-center text-[#2E7D32] text-xl">
+                        <i class='bx bx-message-rounded-dots'></i>
+                    </div>
+                    <div>
+                        <h2 class="font-outfit font-semibold text-[#263238] text-lg leading-tight">Chat con el vendedor</h2>
+                        <p class="text-xs text-[#607D8B]">Consulta sobre tu pedido #{{ $order->order_number }}</p>
+                    </div>
+                    <span id="chat-unread-badge" class="ml-auto hidden bg-[#2E7D32] text-white text-xs font-bold px-2 py-0.5 rounded-full"></span>
+                </div>
+
+                <!-- Mensajes -->
+                <div id="chat-messages" class="h-80 overflow-y-auto p-5 space-y-3 bg-[#FAFAFA]">
+                    <div id="chat-empty" class="flex flex-col items-center justify-center h-full text-center text-[#B0BEC5]">
+                        <i class='bx bx-chat text-5xl mb-3'></i>
+                        <p class="text-sm font-medium">Aún no hay mensajes</p>
+                        <p class="text-xs mt-1">Escribe al vendedor si tienes alguna duda sobre tu compra.</p>
+                    </div>
+                </div>
+
+                <!-- Input -->
+                <div class="p-4 border-t border-[#E5E7EB] bg-white">
+                    <form id="chat-form" class="flex items-center gap-3">
+                        @csrf
+                        <input
+                            id="chat-input"
+                            type="text"
+                            placeholder="Escribe un mensaje..."
+                            maxlength="1000"
+                            autocomplete="off"
+                            class="flex-1 rounded-2xl border border-[#E5E7EB] bg-[#F8FAF7] px-4 py-2.5 text-sm text-[#263238] placeholder-[#B0BEC5] focus:outline-none focus:ring-2 focus:ring-[#2E7D32]/30 focus:border-[#2E7D32] transition"
+                        />
+                        <button
+                            type="submit"
+                            id="chat-send-btn"
+                            class="flex-shrink-0 w-10 h-10 bg-[#2E7D32] hover:bg-[#1B5E20] text-white rounded-full flex items-center justify-center text-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                            <i class='bx bx-send'></i>
+                        </button>
+                    </form>
+                </div>
+            </div>
+            @endif
+            <!-- ───────────────── FIN CHAT ───────────────── -->
+
         </div>
         
         <!-- Sidebar Detalles -->
@@ -160,4 +209,142 @@
 
     </div>
 </div>
+
+@if($order->status !== 'pendiente' && $order->status !== 'cancelado')
+@push('scripts')
+<script>
+(function() {
+    const MESSAGES_URL = '{{ route('orders.messages.index', $order) }}';
+    const STORE_URL    = '{{ route('orders.messages.store', $order) }}';
+    const CSRF_TOKEN   = document.querySelector('meta[name="csrf-token"]')?.content ?? '{{ csrf_token() }}';
+
+    const container  = document.getElementById('chat-messages');
+    const emptyState = document.getElementById('chat-empty');
+    const form       = document.getElementById('chat-form');
+    const input      = document.getElementById('chat-input');
+    const sendBtn    = document.getElementById('chat-send-btn');
+    const badge      = document.getElementById('chat-unread-badge');
+
+    let lastMessageId = 0;
+    let isPolling = false;
+
+    function createBubble(msg) {
+        const wrapper = document.createElement('div');
+        wrapper.className = `flex ${msg.is_mine ? 'justify-end' : 'justify-start'} gap-2`;
+        wrapper.dataset.msgId = msg.id;
+
+        const bubble = document.createElement('div');
+        bubble.className = msg.is_mine
+            ? 'max-w-[75%] bg-[#2E7D32] text-white rounded-2xl rounded-br-sm px-4 py-2.5 shadow-sm'
+            : 'max-w-[75%] bg-white text-[#263238] rounded-2xl rounded-bl-sm px-4 py-2.5 shadow-sm border border-[#E5E7EB]';
+
+        if (!msg.is_mine) {
+            const name = document.createElement('p');
+            name.className = 'text-[10px] font-bold text-[#2E7D32] mb-0.5 uppercase tracking-wide';
+            name.textContent = msg.sender_name;
+            bubble.appendChild(name);
+        }
+
+        const text = document.createElement('p');
+        text.className = 'text-sm leading-relaxed break-words';
+        text.textContent = msg.message;
+        bubble.appendChild(text);
+
+        const time = document.createElement('p');
+        time.className = msg.is_mine
+            ? 'text-[10px] text-white/60 mt-1 text-right'
+            : 'text-[10px] text-[#B0BEC5] mt-1 text-right';
+        time.textContent = `${msg.date} · ${msg.time}`;
+        bubble.appendChild(time);
+
+        wrapper.appendChild(bubble);
+        return wrapper;
+    }
+
+    function scrollToBottom(smooth = false) {
+        container.scrollTo({ top: container.scrollHeight, behavior: smooth ? 'smooth' : 'auto' });
+    }
+
+    async function fetchMessages() {
+        if (isPolling) return;
+        isPolling = true;
+        try {
+            const res = await fetch(MESSAGES_URL, {
+                headers: { 'Accept': 'application/json', 'X-CSRF-TOKEN': CSRF_TOKEN }
+            });
+            if (!res.ok) return;
+            const data = await res.json();
+
+            // Solo agregar mensajes nuevos
+            const existingIds = new Set([...container.querySelectorAll('[data-msg-id]')].map(el => Number(el.dataset.msgId)));
+            const newMessages = data.messages.filter(m => !existingIds.has(m.id));
+
+            if (newMessages.length > 0) {
+                if (emptyState) emptyState.remove();
+                const atBottom = container.scrollHeight - container.scrollTop <= container.clientHeight + 60;
+                newMessages.forEach(msg => {
+                    container.appendChild(createBubble(msg));
+                    lastMessageId = Math.max(lastMessageId, msg.id);
+                });
+                if (atBottom) scrollToBottom(true);
+            }
+
+            // Badge de no leídos
+            if (data.unread_count > 0) {
+                badge.textContent = data.unread_count;
+                badge.classList.remove('hidden');
+            } else {
+                badge.classList.add('hidden');
+            }
+        } catch (e) {
+            console.error('Chat polling error:', e);
+        } finally {
+            isPolling = false;
+        }
+    }
+
+    // Enviar mensaje
+    form.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const text = input.value.trim();
+        if (!text) return;
+
+        sendBtn.disabled = true;
+        input.disabled = true;
+
+        try {
+            const res = await fetch(STORE_URL, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'X-CSRF-TOKEN': CSRF_TOKEN
+                },
+                body: JSON.stringify({ message: text })
+            });
+
+            if (res.status === 201) {
+                const msg = await res.json();
+                if (emptyState && emptyState.parentNode === container) emptyState.remove();
+                container.appendChild(createBubble(msg));
+                scrollToBottom(true);
+                input.value = '';
+            }
+        } catch (e) {
+            console.error('Error sending message:', e);
+        } finally {
+            sendBtn.disabled = false;
+            input.disabled = false;
+            input.focus();
+        }
+    });
+
+    // Polling cada 4 segundos
+    fetchMessages();
+    setInterval(fetchMessages, 4000);
+})();
+</script>
+@endpush
+@endif
 @endsection
+

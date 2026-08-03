@@ -173,6 +173,19 @@ class SellerController extends Controller
         $order->load(['buyer', 'address', 'shipment', 'payment', 'items' => function($q) use ($user) {
             $q->where('seller_id', $user->id);
         }]);
+
+        if (!$order->shipment) {
+            $order->shipment()->create([
+                'status'          => 'preparando',
+                'carrier'         => 'ReWear Delivery',
+                'tracking_number' => 'RW-' . strtoupper(\Illuminate\Support\Str::random(10)),
+            ]);
+            $order->load('shipment');
+        } elseif (!$order->shipment->tracking_number) {
+            $order->shipment->update([
+                'tracking_number' => 'RW-' . strtoupper(\Illuminate\Support\Str::random(10)),
+            ]);
+        }
         
         return view('seller.orders.show', compact('order'));
     }
@@ -192,9 +205,7 @@ class SellerController extends Controller
         
         if ($order->shipment) {
             $order->shipment->update([
-                'status' => 'en_transito',
-                'carrier' => 'ReWear Delivery',
-                'tracking_number' => 'RW-' . strtoupper(\Illuminate\Support\Str::random(10)),
+                'status'     => 'en_transito',
                 'shipped_at' => now(),
             ]);
         }
@@ -213,7 +224,22 @@ class SellerController extends Controller
             abort(403);
         }
 
-        $order->load(['buyer', 'address']);
+        $order->load(['buyer', 'address', 'shipment', 'items.product.user']);
+
+        // Asegurar que exista shipment y tenga número de rastreo
+        if (!$order->shipment) {
+            $order->shipment()->create([
+                'status'          => 'preparando',
+                'carrier'         => 'ReWear Delivery',
+                'tracking_number' => 'RW-' . strtoupper(\Illuminate\Support\Str::random(10)),
+            ]);
+            $order->load('shipment');
+        } elseif (!$order->shipment->tracking_number) {
+            $order->shipment->update([
+                'tracking_number' => 'RW-' . strtoupper(\Illuminate\Support\Str::random(10)),
+            ]);
+        }
+
         $confirmationUrl = route('orders.confirm-delivery', $order);
         
         return view('seller.orders.label', compact('order', 'confirmationUrl'));

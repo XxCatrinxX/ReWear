@@ -139,7 +139,10 @@
     <div class="label-container">
         <div class="header" style="display: flex; justify-content: space-between; align-items: center;">
             <div class="logo">♻ ReWear</div>
-            <div class="order-num">{{ $order->order_number }}</div>
+            <div style="text-align: right;">
+                <div class="order-num" style="margin-bottom: 4px;">Pedido: {{ $order->order_number }}</div>
+                <div style="font-family: monospace; font-size: 13px; font-weight: bold; color: #263238;">Guía: {{ $order->shipment->tracking_number ?? 'RW-N/A' }}</div>
+            </div>
         </div>
 
         <div class="section-title">Remitente</div>
