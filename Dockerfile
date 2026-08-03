@@ -12,8 +12,8 @@ WORKDIR /app
 COPY composer*.json ./
 RUN composer install --no-dev --no-interaction --prefer-dist --optimize-autoloader --no-scripts
 
-# Stage 3: Production Runtime (PHP 8.3 FPM + Nginx)
-FROM php:8.3-fpm-alpine
+# Stage 3: Production Runtime (PHP 8.4 FPM + Nginx)
+FROM php:8.4-fpm-alpine
 
 # Instalar dependencias del sistema y extensiones de PHP necesarias para Laravel
 RUN apk add --no-cache \
