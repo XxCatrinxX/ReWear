@@ -53,7 +53,6 @@ export default {
 
             fontFamily: {
                 sans: ['Inter', ...defaultTheme.fontFamily.sans],
-                outfit: ['Outfit', ...defaultTheme.fontFamily.sans],
             }
             
         },

@@ -33,7 +33,7 @@
             <!-- Background Image -->
 
             <img
-                src="https://images.unsplash.com/photo-1489987707023-afc7e4348d5d?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80"
+                src="{{ asset('images/fondo ropa.jpg') }}"
                 alt="ReWear"
                 class="absolute inset-0 h-full w-full object-cover scale-105">
 

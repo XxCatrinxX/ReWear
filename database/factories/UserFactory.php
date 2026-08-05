@@ -12,6 +12,9 @@ use Illuminate\Support\Str;
  */
 class UserFactory extends Factory
 {
+    /**
+     * The current password being used by the factory.
+     */
     protected static ?string $password;
 
     /**
@@ -22,15 +25,11 @@ class UserFactory extends Factory
     public function definition(): array
     {
         return [
-            'name'               => fake()->name(),
-            'username'           => fake()->unique()->userName(),
-            'email'              => fake()->unique()->safeEmail(),
-            'email_verified_at'  => now(),
-            'password'           => static::$password ??= Hash::make('password'),
-            'is_admin'           => false,
-            'is_seller'          => false,
-            'status'             => true,
-            'remember_token'     => Str::random(10),
+            'name' => fake()->name(),
+            'email' => fake()->unique()->safeEmail(),
+            'email_verified_at' => now(),
+            'password' => static::$password ??= Hash::make('password'),
+            'remember_token' => Str::random(10),
         ];
     }
 
@@ -41,27 +40,6 @@ class UserFactory extends Factory
     {
         return $this->state(fn (array $attributes) => [
             'email_verified_at' => null,
-        ]);
-    }
-
-    /**
-     * Indicate that the user is an admin.
-     */
-    public function admin(): static
-    {
-        return $this->state(fn (array $attributes) => [
-            'is_admin'  => true,
-            'is_seller' => true,
-        ]);
-    }
-
-    /**
-     * Indicate that the user is a seller.
-     */
-    public function seller(): static
-    {
-        return $this->state(fn (array $attributes) => [
-            'is_seller' => true,
         ]);
     }
 }
