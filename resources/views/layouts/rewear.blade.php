@@ -37,7 +37,11 @@
                 <!-- Logo & Nav Links -->
                 <div class="flex items-center gap-8">
                     <a href="{{ route('home') }}" class="flex items-center gap-2 group">
-                        <div class="w-10 h-10 bg-[#2E7D32] rounded-xl flex items-center justify-center text-white font-outfit font-bold text-xl group-hover:bg-[#1B5E20] transition-colors shadow-soft">RW</div>
+                        @if(file_exists(public_path('images/rewear1.png')))
+                            <img src="{{ asset('images/rewear1.png') }}" class="w-10 h-10 object-contain rounded-xl shadow-soft" alt="ReWear">
+                        @else
+                            <div class="w-10 h-10 bg-[#2E7D32] rounded-xl flex items-center justify-center text-white font-outfit font-bold text-xl group-hover:bg-[#1B5E20] transition-colors shadow-soft">RW</div>
+                        @endif
                         <span class="font-outfit font-bold text-2xl tracking-tight text-[#2E7D32]">ReWear</span>
                     </a>
                     
@@ -220,7 +224,11 @@
             <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
                 <div class="col-span-1 md:col-span-1">
                     <a href="{{ route('home') }}" class="flex items-center gap-2 mb-4">
-                        <div class="w-8 h-8 bg-[#2E7D32] rounded-lg flex items-center justify-center text-white font-outfit font-bold text-lg">RW</div>
+                        @if(file_exists(public_path('images/rewear1.png')))
+                            <img src="{{ asset('images/rewear1.png') }}" class="w-8 h-8 object-contain rounded-lg" alt="ReWear">
+                        @else
+                            <div class="w-8 h-8 bg-[#2E7D32] rounded-lg flex items-center justify-center text-white font-outfit font-bold text-lg">RW</div>
+                        @endif
                         <span class="font-outfit font-bold text-xl tracking-tight text-[#2E7D32]">ReWear</span>
                     </a>
                     <p class="text-sm text-[#607D8B] mb-6">El marketplace de moda circular donde puedes comprar y vender ropa de segunda mano con estilo y seguridad.</p>
@@ -320,9 +328,13 @@
     <!-- Banner de Instalación PWA (Android / Mobile) -->
     <div id="pwa-install-banner" class="hidden fixed bottom-16 left-4 right-4 z-50 bg-[#263238] text-white p-4 rounded-2xl shadow-xl flex items-center justify-between gap-3 border border-white/10 md:hidden">
         <div class="flex items-center gap-3">
-            <div class="w-10 h-10 bg-[#2E7D32] rounded-xl flex items-center justify-center font-bold text-lg text-white flex-shrink-0">
-                RW
-            </div>
+            @if(file_exists(public_path('images/rewear1.png')))
+                <img src="{{ asset('images/rewear1.png') }}" class="w-10 h-10 object-contain rounded-xl flex-shrink-0" alt="ReWear">
+            @else
+                <div class="w-10 h-10 bg-[#2E7D32] rounded-xl flex items-center justify-center font-bold text-lg text-white flex-shrink-0">
+                    RW
+                </div>
+            @endif
             <div>
                 <p class="font-bold text-sm leading-tight">Instalar ReWear App</p>
                 <p class="text-xs text-gray-300">Acceso rápido desde tu pantalla principal</p>
