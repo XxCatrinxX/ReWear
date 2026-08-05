@@ -12,7 +12,9 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="ReWear">
     <link rel="manifest" href="/manifest.json">
-    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <link rel="icon" type="image/png" sizes="192x192" href="/images/pwa/icon-192.png">
+    <link rel="icon" type="image/png" sizes="512x512" href="/images/pwa/icon-512.png">
+    <link rel="shortcut icon" href="/favicon.png">
     <link rel="apple-touch-icon" href="/images/pwa/icon-192.png">
 
     <title>{{ config('app.name', 'ReWear') }} - @yield('title', 'Marketplace de ropa de segunda mano')</title>
@@ -370,10 +372,15 @@
         const installBtn = document.getElementById('pwa-install-btn');
         const closeBtn = document.getElementById('pwa-close-btn');
 
+        @auth
+            // Al iniciar sesión, resetear el estado cerrado del banner para mostrarlo de nuevo
+            sessionStorage.removeItem('pwa_banner_dismissed');
+        @endauth
+
         window.addEventListener('beforeinstallprompt', (e) => {
             e.preventDefault();
             deferredPrompt = e;
-            if (installBanner && !localStorage.getItem('pwa_banner_dismissed')) {
+            if (installBanner && !sessionStorage.getItem('pwa_banner_dismissed')) {
                 installBanner.classList.remove('hidden');
             }
         });
@@ -393,7 +400,7 @@
         if (closeBtn) {
             closeBtn.addEventListener('click', () => {
                 installBanner.classList.add('hidden');
-                localStorage.setItem('pwa_banner_dismissed', 'true');
+                sessionStorage.setItem('pwa_banner_dismissed', 'true');
             });
         }
     </script>
