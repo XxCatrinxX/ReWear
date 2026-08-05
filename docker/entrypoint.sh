@@ -27,6 +27,11 @@ fi
 # Crear enlace simbólico de almacenamiento si no existe
 php artisan storage:link || true
 
+# Limpiar cachés antes de ejecutar migraciones (importante para detectar cambios de env)
+php artisan config:clear
+php artisan cache:clear
+php artisan view:clear
+
 # Ejecutar migraciones de base de datos
 echo "Ejecutando migraciones de base de datos..."
 php artisan migrate --force || echo "Advertencia: La migración falló pero la aplicación continuará."
@@ -43,3 +48,4 @@ echo "ReWear iniciado correctamente para Railway."
 php-fpm -D
 sleep 1
 exec nginx -g 'daemon off;'
+
