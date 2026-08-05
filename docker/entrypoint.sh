@@ -12,8 +12,8 @@ mkdir -p /var/www/html/storage/framework/views \
          /var/www/html/bootstrap/cache
 chmod -R 777 /var/www/html/storage /var/www/html/bootstrap/cache
 
-# Crear archivo SQLite de respaldo solo si explícitamente se usa SQLite y no hay MySQL de Railway
-if [ "${DB_CONNECTION}" = "sqlite" ] && [ -z "${MYSQLHOST}" ] && [ -z "${MYSQL_URL}" ]; then
+# Crear archivo SQLite de respaldo si se usa SQLite
+if [ "${DB_CONNECTION}" = "sqlite" ] || [ -z "${DB_CONNECTION}" ]; then
     touch /var/www/html/database/database.sqlite
     chmod 777 /var/www/html/database/database.sqlite
 fi
@@ -27,14 +27,16 @@ fi
 # Crear enlace simbólico de almacenamiento si no existe
 php artisan storage:link || true
 
-# Limpiar cachés antes de ejecutar migraciones (importante para detectar cambios de env)
+# Limpiar cachés de archivo (config, views) antes de ejecutar migraciones
 php artisan config:clear
-php artisan cache:clear
 php artisan view:clear
 
 # Ejecutar migraciones de base de datos
 echo "Ejecutando migraciones de base de datos..."
 php artisan migrate --force || echo "Advertencia: La migración falló pero la aplicación continuará."
+
+# Limpiar cache de base de datos DESPUÉS de que las tablas existan
+php artisan cache:clear || true
 
 # Limpiar y optimizar cachés en producción
 php artisan config:cache
