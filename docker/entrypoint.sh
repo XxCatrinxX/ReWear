@@ -12,8 +12,8 @@ mkdir -p /var/www/html/storage/framework/views \
          /var/www/html/bootstrap/cache
 chmod -R 777 /var/www/html/storage /var/www/html/bootstrap/cache
 
-# Crear archivo SQLite de respaldo si se usa SQLite
-if [ "${DB_CONNECTION}" = "sqlite" ] || [ -z "${DB_CONNECTION}" ]; then
+# Crear archivo SQLite de respaldo solo si explícitamente se usa SQLite y no hay MySQL de Railway
+if [ "${DB_CONNECTION}" = "sqlite" ] && [ -z "${MYSQLHOST}" ] && [ -z "${MYSQL_URL}" ]; then
     touch /var/www/html/database/database.sqlite
     chmod 777 /var/www/html/database/database.sqlite
 fi
