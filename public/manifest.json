@@ -1,0 +1,56 @@
+{
+  "name": "ReWear - Marketplace de Moda Circular",
+  "short_name": "ReWear",
+  "description": "Compra y vende ropa de segunda mano de forma rápida, segura y sustentable.",
+  "start_url": "/",
+  "id": "/",
+  "display": "standalone",
+  "background_color": "#F8FAF7",
+  "theme_color": "#2E7D32",
+  "orientation": "portrait-primary",
+  "lang": "es",
+  "categories": ["shopping", "lifestyle", "fashion"],
+  "icons": [
+    {
+      "src": "/images/pwa/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/images/pwa/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/images/pwa/icon-maskable.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Catálogo",
+      "short_name": "Catálogo",
+      "description": "Ver prendas disponibles",
+      "url": "/catalog",
+      "icons": [{ "src": "/images/pwa/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Vender Ropa",
+      "short_name": "Vender",
+      "description": "Publica una prenda",
+      "url": "/seller/products/create",
+      "icons": [{ "src": "/images/pwa/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Mis Compras",
+      "short_name": "Compras",
+      "description": "Ver estado de tus pedidos",
+      "url": "/orders",
+      "icons": [{ "src": "/images/pwa/icon-192.png", "sizes": "192x192" }]
+    }
+  ]
+}
