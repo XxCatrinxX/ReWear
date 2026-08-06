@@ -32,9 +32,10 @@ php artisan config:clear
 php artisan cache:clear
 php artisan view:clear
 
-# Ejecutar migraciones de base de datos
-echo "Ejecutando migraciones de base de datos..."
+# Ejecutar migraciones de base de datos y sembrado inicial
+echo "Ejecutando migraciones y sembrado de categorías..."
 php artisan migrate --force || echo "Advertencia: La migración falló pero la aplicación continuará."
+php artisan db:seed --class=CategorySeeder --force || true
 
 # Limpiar y optimizar cachés en producción
 php artisan config:cache

@@ -59,6 +59,16 @@ class SellerController extends Controller
     public function create()
     {
         $categories = Category::active()->roots()->with('children')->get();
+
+        // Fallback: Si la base de datos está vacía, poblar categorías automáticamente
+        if ($categories->isEmpty()) {
+            \Illuminate\Support\Facades\Artisan::call('db:seed', [
+                '--class' => 'CategorySeeder',
+                '--force' => true,
+            ]);
+            $categories = Category::active()->roots()->with('children')->get();
+        }
+
         $conditions = Product::$conditions;
         $sizes = Product::$sizes;
         
