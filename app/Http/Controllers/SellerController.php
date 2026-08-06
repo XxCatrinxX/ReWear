@@ -80,15 +80,30 @@ class SellerController extends Controller
      */
     public function store(StoreProductRequest $request)
     {
+        $user = $request->user();
+
+        // Verificar límite mensual para vendedores sin membresía premium
+        if (!$user->hasPremiumMembership()) {
+            $limit     = 10;
+            $published = $user->publishedThisMonth();
+
+            if ($published >= $limit) {
+                return back()->with(
+                    'error',
+                    "Has alcanzado el límite de {$limit} publicaciones gratuitas este mes. " .
+                    "Activa la Membresía Premium para publicaciones ilimitadas."
+                );
+            }
+        }
+
         $validated = $request->validated();
-        
-        $product = $request->user()->products()->create($validated);
-        
+        $product   = $user->products()->create($validated);
+
         if ($request->hasFile('images')) {
             $this->productService->uploadImages($product, $request->file('images'));
             $this->productService->setCoverImage($product);
         }
-        
+
         return redirect()->route('seller.products.index')
             ->with('success', 'Publicación creada exitosamente.');
     }

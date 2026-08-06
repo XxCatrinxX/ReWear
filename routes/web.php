@@ -4,6 +4,7 @@ use App\Http\Controllers\Admin\AdminCategoryController;
 use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Admin\AdminOrderController;
 use App\Http\Controllers\Admin\AdminProductController;
+use App\Http\Controllers\Admin\AdminReportController;
 use App\Http\Controllers\Admin\AdminUserController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\CategoryController;
@@ -12,8 +13,10 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\FavoriteController;
 use App\Http\Controllers\FooterController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\MembershipController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\ProductReportController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SellerController;
 use Illuminate\Support\Facades\Route;
@@ -82,6 +85,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Chat del pedido (comprador y vendedor comparten el mismo controlador)
     Route::get('/orders/{order}/messages', [OrderMessageController::class, 'index'])->name('orders.messages.index');
     Route::post('/orders/{order}/messages', [OrderMessageController::class, 'store'])->name('orders.messages.store');
+
+    // Reportes de publicaciones
+    Route::post('/products/{product}/report', [ProductReportController::class, 'store'])->name('products.report');
 });
 
 /*
@@ -113,6 +119,11 @@ Route::middleware(['auth', 'verified', 'seller'])->prefix('seller')->name('selle
     Route::get('/products/{product}/edit', [SellerController::class, 'edit'])->name('products.edit');
     Route::patch('/products/{product}', [SellerController::class, 'update'])->name('products.update');
     Route::delete('/products/{product}', [SellerController::class, 'destroy'])->name('products.destroy');
+
+    // Membresía Premium
+    Route::get('/membership', [MembershipController::class, 'index'])->name('membership');
+    Route::post('/membership/activate', [MembershipController::class, 'activate'])->name('membership.activate');
+    Route::post('/membership/cancel', [MembershipController::class, 'cancel'])->name('membership.cancel');
 });
 
 /*
@@ -141,6 +152,13 @@ Route::middleware(['auth', 'verified', 'admin'])->prefix('admin')->name('admin.'
     Route::get('/orders', [AdminOrderController::class, 'index'])->name('orders.index');
     Route::get('/orders/{order}', [AdminOrderController::class, 'show'])->name('orders.show');
     Route::patch('/orders/{order}/status', [AdminOrderController::class, 'updateStatus'])->name('orders.update-status');
+
+    // Reportes de publicaciones
+    Route::get('/reports', [AdminReportController::class, 'index'])->name('reports.index');
+    Route::patch('/reports/{report}', [AdminReportController::class, 'update'])->name('reports.update');
+
+    // Gestión de membresías
+    Route::patch('/users/{user}/membership', [AdminUserController::class, 'toggleMembership'])->name('users.membership');
 });
 
 require __DIR__.'/auth.php';

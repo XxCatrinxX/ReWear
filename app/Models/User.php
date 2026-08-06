@@ -28,6 +28,8 @@ class User extends Authenticatable
         'bio',
         'is_admin',
         'is_seller',
+        'is_premium_seller',
+        'membership_expires_at',
         'status',
         'pending_balance',
         'available_balance',
@@ -53,13 +55,15 @@ class User extends Authenticatable
     protected function casts(): array
     {
         return [
-            'email_verified_at' => 'datetime',
-            'password'          => 'hashed',
-            'is_admin'          => 'boolean',
-            'is_seller'         => 'boolean',
-            'status'            => 'boolean',
-            'pending_balance'   => 'decimal:2',
-            'available_balance' => 'decimal:2',
+            'email_verified_at'     => 'datetime',
+            'membership_expires_at' => 'datetime',
+            'password'              => 'hashed',
+            'is_admin'              => 'boolean',
+            'is_seller'             => 'boolean',
+            'is_premium_seller'     => 'boolean',
+            'status'                => 'boolean',
+            'pending_balance'       => 'decimal:2',
+            'available_balance'     => 'decimal:2',
         ];
     }
 
@@ -87,6 +91,35 @@ class User extends Authenticatable
     public function becomeSeller(): void
     {
         $this->update(['is_seller' => true]);
+    }
+
+    /**
+     * Determina si la membresía premium está activa.
+     */
+    public function hasPremiumMembership(): bool
+    {
+        return $this->is_premium_seller &&
+               $this->membership_expires_at &&
+               $this->membership_expires_at->isFuture();
+    }
+
+    /**
+     * Límite de publicaciones activas por mes según plan.
+     */
+    public function monthlyProductLimit(): int
+    {
+        return $this->hasPremiumMembership() ? PHP_INT_MAX : 10;
+    }
+
+    /**
+     * Publicaciones publicadas este mes.
+     */
+    public function publishedThisMonth(): int
+    {
+        return $this->products()
+            ->whereMonth('created_at', now()->month)
+            ->whereYear('created_at', now()->year)
+            ->count();
     }
 
     /**
@@ -154,5 +187,10 @@ class User extends Authenticatable
     public function withdrawals(): HasMany
     {
         return $this->hasMany(Withdrawal::class);
+    }
+
+    public function reports(): HasMany
+    {
+        return $this->hasMany(\App\Models\ProductReport::class);
     }
 }

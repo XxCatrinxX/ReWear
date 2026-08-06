@@ -50,6 +50,29 @@
         </div>
     </div>
 
+    <!-- Banner de Membresía -->
+    @php $user = auth()->user(); @endphp
+    <div class="mb-8 p-5 rounded-2xl border {{ $user->hasPremiumMembership() ? 'border-amber-300 bg-amber-50' : 'border-[#E5E7EB] bg-white' }} flex items-center justify-between gap-4 shadow-sm">
+        <div class="flex items-center gap-4">
+            <div class="w-12 h-12 rounded-xl {{ $user->hasPremiumMembership() ? 'bg-amber-100' : 'bg-[#F8FAF7]' }} flex items-center justify-center flex-shrink-0">
+                <i class='bx {{ $user->hasPremiumMembership() ? "bxs-crown text-amber-500" : "bx-user text-[#607D8B]" }} text-2xl'></i>
+            </div>
+            <div>
+                @if($user->hasPremiumMembership())
+                    <p class="font-semibold text-amber-800">Plan Premium activo <i class='bx bxs-crown text-amber-500'></i></p>
+                    <p class="text-sm text-amber-700">Publicaciones ilimitadas · Vence {{ $user->membership_expires_at->format('d/m/Y') }}</p>
+                @else
+                    <p class="font-semibold text-[#263238]">Plan Gratuito</p>
+                    <p class="text-sm text-[#607D8B]">{{ $user->publishedThisMonth() }} / 10 publicaciones este mes · Actualiza para publicar sin límites</p>
+                @endif
+            </div>
+        </div>
+        <a href="{{ route('seller.membership') }}"
+           class="flex-shrink-0 px-4 py-2 rounded-xl text-sm font-semibold transition {{ $user->hasPremiumMembership() ? 'bg-amber-100 text-amber-800 hover:bg-amber-200' : 'bg-[#2E7D32] text-white hover:bg-[#1B5E20]' }}">
+            {{ $user->hasPremiumMembership() ? 'Gestionar' : 'Activar Premium' }}
+        </a>
+    </div>
+
     <div class="flex flex-col lg:flex-row gap-8">
         
         <!-- Publicaciones Recientes -->

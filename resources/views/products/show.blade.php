@@ -133,6 +133,77 @@
         </div>
     </div>
 
+    <!-- Botón de reporte (solo para usuarios autenticados que no son el vendedor) -->
+    @auth
+        @if(auth()->id() !== $product->user_id)
+        <div class="flex justify-end mb-4 -mt-6 px-2">
+            <button onclick="document.getElementById('report-modal').classList.remove('hidden')"
+                class="flex items-center gap-1.5 text-xs text-[#607D8B] hover:text-red-500 transition">
+                <i class='bx bx-flag'></i> Reportar esta publicación
+            </button>
+        </div>
+
+        <!-- Modal de reporte -->
+        <div id="report-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+            <div class="bg-white rounded-3xl shadow-2xl max-w-md w-full p-8">
+                <div class="flex items-center justify-between mb-6">
+                    <h3 class="font-outfit text-xl font-bold text-[#263238]">Reportar publicación</h3>
+                    <button onclick="document.getElementById('report-modal').classList.add('hidden')"
+                        class="text-[#607D8B] hover:text-[#263238] transition p-1">
+                        <i class='bx bx-x text-2xl'></i>
+                    </button>
+                </div>
+
+                @if(session('success'))
+                    <div class="mb-4 p-3 bg-green-50 border border-green-200 rounded-xl text-green-700 text-sm">
+                        {{ session('success') }}
+                    </div>
+                @endif
+                @if(session('error'))
+                    <div class="mb-4 p-3 bg-red-50 border border-red-200 rounded-xl text-red-700 text-sm">
+                        {{ session('error') }}
+                    </div>
+                @endif
+
+                <form method="POST" action="{{ route('products.report', $product) }}">
+                    @csrf
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-[#263238] mb-2">Motivo del reporte *</label>
+                        <select name="reason" required
+                            class="w-full bg-[#F8FAF7] border-[#E5E7EB] rounded-xl focus:border-[#2E7D32] focus:ring focus:ring-[#2E7D32]/20 text-sm">
+                            <option value="">Selecciona un motivo...</option>
+                            <option value="Producto prohibido o ilegal">Producto prohibido o ilegal</option>
+                            <option value="Foto o descripción engañosa">Foto o descripción engañosa</option>
+                            <option value="Producto no es ropa de segunda mano">Producto no es ropa de segunda mano</option>
+                            <option value="Precio abusivo">Precio abusivo</option>
+                            <option value="Contenido inapropiado">Contenido inapropiado</option>
+                            <option value="Sospecha de fraude">Sospecha de fraude</option>
+                            <option value="Otro">Otro</option>
+                        </select>
+                        @error('reason') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror
+                    </div>
+                    <div class="mb-6">
+                        <label class="block text-sm font-medium text-[#263238] mb-2">Detalles adicionales <span class="text-[#607D8B] font-normal">(opcional)</span></label>
+                        <textarea name="details" rows="3" placeholder="Describe brevemente el incumplimiento..."
+                            class="w-full bg-[#F8FAF7] border-[#E5E7EB] rounded-xl focus:border-[#2E7D32] focus:ring focus:ring-[#2E7D32]/20 text-sm resize-none"></textarea>
+                    </div>
+                    <div class="flex gap-3">
+                        <button type="button"
+                            onclick="document.getElementById('report-modal').classList.add('hidden')"
+                            class="flex-1 py-3 rounded-xl border border-[#E5E7EB] text-[#607D8B] hover:bg-[#F8FAF7] transition text-sm font-medium">
+                            Cancelar
+                        </button>
+                        <button type="submit"
+                            class="flex-1 py-3 rounded-xl bg-red-500 hover:bg-red-600 text-white transition text-sm font-semibold">
+                            <i class='bx bx-flag mr-1'></i> Enviar reporte
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        @endif
+    @endauth
+
     <!-- Sección de Preguntas al Vendedor -->
     <div class="bg-white rounded-3xl p-8 border border-[#E5E7EB] shadow-sm mb-12">
         <h2 class="font-outfit text-2xl font-bold text-[#263238] mb-2">Preguntas al vendedor</h2>

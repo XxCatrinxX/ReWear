@@ -51,6 +51,28 @@
         <p class="font-outfit text-3xl font-bold text-[#263238]">${{ number_format($stats['revenue_sim'], 2) }}</p>
         <p class="text-sm text-[#607D8B] mt-2">Volumen de ventas</p>
     </div>
+
+    <div class="bg-white p-6 rounded-2xl shadow-sm border border-amber-200">
+        <div class="flex items-center justify-between mb-4">
+            <h3 class="text-[#607D8B] font-medium text-sm uppercase tracking-wider">Premium</h3>
+            <div class="w-10 h-10 rounded-full bg-amber-50 text-amber-500 flex items-center justify-center text-xl">
+                <i class='bx bxs-crown'></i>
+            </div>
+        </div>
+        <p class="font-outfit text-3xl font-bold text-[#263238]">{{ $stats['premium_sellers'] }}</p>
+        <p class="text-sm text-[#607D8B] mt-2">Vendedores Premium</p>
+    </div>
+
+    <div class="bg-white p-6 rounded-2xl shadow-sm border {{ $stats['pending_reports'] > 0 ? 'border-red-300' : 'border-[#E5E7EB]' }}">
+        <div class="flex items-center justify-between mb-4">
+            <h3 class="text-[#607D8B] font-medium text-sm uppercase tracking-wider">Reportes</h3>
+            <div class="w-10 h-10 rounded-full {{ $stats['pending_reports'] > 0 ? 'bg-red-50 text-red-500' : 'bg-gray-50 text-gray-400' }} flex items-center justify-center text-xl">
+                <i class='bx bx-flag'></i>
+            </div>
+        </div>
+        <p class="font-outfit text-3xl font-bold {{ $stats['pending_reports'] > 0 ? 'text-red-600' : 'text-[#263238]' }}">{{ $stats['pending_reports'] }}</p>
+        <a href="{{ route('admin.reports.index', ['status' => 'pendiente']) }}" class="text-sm text-red-500 hover:underline mt-2 inline-block">Revisar pendientes</a>
+    </div>
 </div>
 
 <div class="grid grid-cols-1 xl:grid-cols-2 gap-8">
@@ -120,4 +142,30 @@
         </div>
     </div>
 </div>
+
+<!-- Reportes Pendientes -->
+@if($pendingReports->isNotEmpty())
+<div class="mt-8 bg-white rounded-2xl shadow-sm border border-red-200 overflow-hidden">
+    <div class="px-6 py-4 border-b border-red-100 flex justify-between items-center bg-red-50">
+        <h2 class="font-outfit font-semibold text-red-700 flex items-center gap-2">
+            <i class='bx bx-flag'></i> Reportes Pendientes de Revisión
+        </h2>
+        <a href="{{ route('admin.reports.index') }}" class="text-sm text-red-600 hover:underline">Ver todos</a>
+    </div>
+    <div class="divide-y divide-[#E5E7EB]">
+        @foreach($pendingReports as $report)
+            <div class="p-4 flex items-center justify-between gap-4">
+                <div class="flex-1 min-w-0">
+                    <p class="font-medium text-[#263238] text-sm truncate">{{ $report->product?->title ?? 'Publicación eliminada' }}</p>
+                    <p class="text-xs text-[#607D8B]">Reportado por {{ $report->user?->name }} &mdash; {{ $report->reason }}</p>
+                </div>
+                <a href="{{ route('admin.reports.index', ['status'=>'pendiente']) }}"
+                   class="flex-shrink-0 px-3 py-1.5 text-xs rounded-xl bg-red-100 text-red-700 hover:bg-red-200 transition font-medium">
+                    Revisar
+                </a>
+            </div>
+        @endforeach
+    </div>
+</div>
+@endif
 @endsection

@@ -43,4 +43,21 @@ class AdminUserController extends Controller
         $user->delete();
         return back()->with('success', 'Usuario eliminado correctamente.');
     }
+
+    public function toggleMembership(User $user)
+    {
+        if ($user->hasPremiumMembership()) {
+            $user->update([
+                'is_premium_seller'     => false,
+                'membership_expires_at' => null,
+            ]);
+            return back()->with('success', 'Membresía Premium revocada al usuario.');
+        }
+
+        $user->update([
+            'is_premium_seller'     => true,
+            'membership_expires_at' => now()->addMonth(),
+        ]);
+        return back()->with('success', 'Membresía Premium otorgada al usuario por 30 días.');
+    }
 }

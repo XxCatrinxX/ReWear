@@ -53,6 +53,14 @@
                 <i class='bx bxs-shopping-bags text-xl'></i>
                 Órdenes
             </a>
+            <a href="{{ route('admin.reports.index') }}" class="flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-xl transition-colors {{ request()->routeIs('admin.reports.*') ? 'bg-red-50 text-red-600' : 'text-[#607D8B] hover:bg-red-50 hover:text-red-600' }}">
+                <i class='bx bx-flag text-xl'></i>
+                Reportes
+                @php $pendingCount = \App\Models\ProductReport::where('status','pendiente')->count(); @endphp
+                @if($pendingCount > 0)
+                    <span class="ml-auto bg-red-500 text-white text-[10px] font-bold rounded-full px-1.5 py-0.5 min-w-[18px] text-center">{{ $pendingCount }}</span>
+                @endif
+            </a>
         </nav>
     </aside>
 
