@@ -71,6 +71,22 @@ class Product extends Model
         });
     }
 
+    // ----------------------------------
+    public static array $colors = [
+        'Negro'      => '#000000',
+        'Blanco'     => '#FFFFFF',
+        'Gris'       => '#9CA3AF',
+        'Azul'       => '#1D4ED8',
+        'Rojo'       => '#DC2626',
+        'Verde'      => '#15803D',
+        'Amarillo'   => '#FACC15',
+        'Rosa'       => '#F472B6',
+        'Morado'     => '#7E22CE',
+        'Beige'      => '#E5D3B3',
+        'Café'       => '#78350F',
+        'Multicolor' => 'linear-gradient(45deg, #f06, #3f51b5)',
+    ];
+
     // ─── Accessors ───────────────────────────────────────────────────────────────
 
     public function getConditionLabelAttribute(): string

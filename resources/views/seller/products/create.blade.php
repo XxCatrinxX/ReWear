@@ -2,6 +2,16 @@
 @section('title', 'Publicar producto')
 
 @section('content')
+@if ($errors->any())
+    <div class="mb-6 p-4 bg-red-50 border-l-4 border-red-500 rounded-r-xl">
+        <h4 class="text-red-800 font-bold mb-1">Error de validación:</h4>
+        <ul class="list-disc list-inside text-sm text-red-700">
+            @foreach ($errors->all() as $error)
+                <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+    </div>
+@endif
 <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
     
     <div class="mb-8">
@@ -84,11 +94,64 @@
                         </select>
                     </div>
 
-                    <div>
-                        <label class="block text-sm font-medium text-[#263238] mb-1">Color principal</label>
-                        <input type="text" name="color" value="{{ old('color') }}" placeholder="Ej: Negro, Azul marino" 
-                            class="w-full bg-[#F8FAF7] border-[#E5E7EB] rounded-xl focus:border-[#2E7D32] focus:ring focus:ring-[#2E7D32]/20">
+                    <!-- SELECTOR DE COLOR CON CÍRCULO Y ALPINE.JS -->
+                    <div x-data="{ 
+                        open: false, 
+                        selected: '{{ old('color', '') }}',
+                        selectedHex: '',
+                        colors: {{ Js::from(collect($colors)->map(fn($hex, $name) => ['name' => $name, 'hex' => $hex])->values()) }},
+                        init() {
+                            if (this.selected) {
+                                let match = this.colors.find(c => c.name === this.selected);
+                                if (match) { this.selectedHex = match.hex; }
+                            }
+                        }
+                    }" class="relative">
+
+                        <label class="block text-sm font-medium text-[#263238] mb-1">Color principal *</label>
+
+                        <!-- Input oculto para enviar POST al backend -->
+                        <input type="hidden" name="color" :value="selected" required>
+
+                        <!-- Botón del dropdown -->
+                        <button type="button" @click="open = !open" @click.away="open = false" 
+                            class="w-full bg-[#F8FAF7] border border-[#E5E7EB] rounded-xl px-4 py-2.5 text-left flex items-center justify-between focus:outline-none focus:border-[#2E7D32] focus:ring focus:ring-[#2E7D32]/20">
+                            
+                            <div class="flex items-center gap-2.5 truncate">
+                                <template x-if="selectedHex">
+                                    <span class="w-4 h-4 rounded-full border border-gray-300 shadow-sm flex-shrink-0" :style="'background: ' + selectedHex"></span>
+                                </template>
+                                <span class="text-sm" :class="selected ? 'text-[#263238] font-medium' : 'text-gray-400'" x-text="selected ? selected : 'Selecciona un color'"></span>
+                            </div>
+
+                            <svg class="w-4 h-4 text-gray-500 transition-transform duration-200" :class="{ 'rotate-180': open }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                            </svg>
+                        </button>
+
+                        <!-- Menú con lista de colores -->
+                        <div x-show="open" 
+                             x-transition:enter="transition ease-out duration-100"
+                             x-transition:enter-start="opacity-0 scale-95"
+                             x-transition:enter-end="opacity-100 scale-100"
+                             x-cloak
+                             class="absolute z-50 mt-2 w-full bg-white border border-[#E5E7EB] rounded-2xl shadow-lg max-h-60 overflow-y-auto py-1">
+                            
+                            <template x-for="c in colors" :key="c.name">
+                                <button type="button" 
+                                    @click="selected = c.name; selectedHex = c.hex; open = false;"
+                                    class="w-full px-4 py-2.5 text-sm flex items-center gap-3 hover:bg-[#F8FAF7] transition-colors text-left"
+                                    :class="{ 'bg-[#2E7D32]/10 font-semibold text-[#2E7D32]': selected === c.name }">
+                                    
+                                    <span class="w-4 h-4 rounded-full border border-gray-300 shadow-sm flex-shrink-0" :style="'background: ' + c.hex"></span>
+                                    <span x-text="c.name" class="text-[#263238]"></span>
+                                </button>
+                            </template>
+                        </div>
+
+                        @error('color') <span class="text-red-500 text-xs mt-1 block">{{ $message }}</span> @enderror
                     </div>
+
                 </div>
             </div>
 
