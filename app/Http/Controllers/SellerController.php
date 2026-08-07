@@ -57,23 +57,23 @@ class SellerController extends Controller
      * Formulario para crear un producto.
      */
     public function create()
-    {
+{
+    $categories = Category::active()->roots()->with('children')->get();
+
+    if ($categories->isEmpty()) {
+        \Illuminate\Support\Facades\Artisan::call('db:seed', [
+            '--class' => 'CategorySeeder',
+            '--force' => true,
+        ]);
         $categories = Category::active()->roots()->with('children')->get();
-
-        // Fallback: Si la base de datos está vacía, poblar categorías automáticamente
-        if ($categories->isEmpty()) {
-            \Illuminate\Support\Facades\Artisan::call('db:seed', [
-                '--class' => 'CategorySeeder',
-                '--force' => true,
-            ]);
-            $categories = Category::active()->roots()->with('children')->get();
-        }
-
-        $conditions = Product::$conditions;
-        $sizes = Product::$sizes;
-        
-        return view('seller.products.create', compact('categories', 'conditions', 'sizes'));
     }
+
+    $conditions = Product::$conditions;
+    $sizes      = Product::$sizes;
+    $colors     = Product::$colors; // <-- AGREGADO
+    
+    return view('seller.products.create', compact('categories', 'conditions', 'sizes', 'colors'));
+}
 
     /**
      * Guarda el nuevo producto.
@@ -112,15 +112,16 @@ class SellerController extends Controller
      * Formulario para editar un producto.
      */
     public function edit(Product $product)
-    {
-        $this->authorize('update', $product);
-        
-        $categories = Category::active()->roots()->with('children')->get();
-        $conditions = Product::$conditions;
-        $sizes = Product::$sizes;
-        
-        return view('seller.products.edit', compact('product', 'categories', 'conditions', 'sizes'));
-    }
+{
+    $this->authorize('update', $product);
+    
+    $categories = Category::active()->roots()->with('children')->get();
+    $conditions = Product::$conditions;
+    $sizes      = Product::$sizes;
+    $colors     = Product::$colors; // <-- AGREGADO
+    
+    return view('seller.products.edit', compact('product', 'categories', 'conditions', 'sizes', 'colors'));
+}
 
     /**
      * Actualiza el producto.

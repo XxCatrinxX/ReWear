@@ -29,6 +29,9 @@
 
     <!-- Styles / Scripts -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <style>
+    [x-cloak] { display: none !important; }
+    </style>
 </head>
 <body class="font-sans antialiased bg-[#F8FAF7] text-[#263238] min-h-screen flex flex-col selection:bg-[#D4A373] selection:text-white pb-20 md:pb-0">
     
@@ -404,5 +407,6 @@
             });
         }
     </script>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 </body>
 </html>
