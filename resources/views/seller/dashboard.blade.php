@@ -9,9 +9,14 @@
             <h1 class="font-outfit text-3xl font-bold text-[#263238] mb-2">Panel de Vendedor</h1>
             <p class="text-[#607D8B]">Bienvenido a tu centro de ventas, {{ auth()->user()->name }}.</p>
         </div>
-        <a href="{{ route('seller.products.create') }}" class="px-6 py-2.5 bg-[#2E7D32] text-white font-semibold rounded-xl shadow-soft hover:bg-[#1B5E20] transition-colors inline-flex items-center gap-2">
-            <i class='bx bx-plus'></i> Nueva publicación
-        </a>
+        <div class="flex items-center gap-3">
+            <a href="{{ route('orders.index') }}" class="px-5 py-2.5 bg-white text-[#607D8B] font-semibold rounded-xl border border-[#E5E7EB] shadow-sm hover:border-[#2E7D32] hover:text-[#2E7D32] transition-colors inline-flex items-center gap-2">
+                <i class='bx bx-package'></i> Mis Compras
+            </a>
+            <a href="{{ route('seller.products.create') }}" class="px-6 py-2.5 bg-[#2E7D32] text-white font-semibold rounded-xl shadow-soft hover:bg-[#1B5E20] transition-colors inline-flex items-center gap-2">
+                <i class='bx bx-plus'></i> Nueva publicación
+            </a>
+        </div>
     </div>
 
     <!-- Estadísticas -->
