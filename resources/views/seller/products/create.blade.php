@@ -2,6 +2,16 @@
 @section('title', 'Publicar producto')
 
 @section('content')
+@if ($errors->any())
+    <div class="mb-6 p-4 bg-red-50 border-l-4 border-red-500 rounded-r-xl">
+        <h4 class="text-red-800 font-bold mb-1">Error de validación:</h4>
+        <ul class="list-disc list-inside text-sm text-red-700">
+            @foreach ($errors->all() as $error)
+                <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+    </div>
+@endif
 <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
     
     <div class="mb-8">
