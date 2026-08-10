@@ -20,6 +20,12 @@
                 <button @click="tab = 'address'" :class="{ 'bg-[#F8FAF7] text-[#2E7D32] border-[#2E7D32]': tab === 'address', 'text-[#607D8B] hover:bg-gray-50 border-transparent': tab !== 'address' }" class="w-full text-left px-4 py-3 border-l-2 font-medium transition-colors flex items-center gap-2">
                     <i class='bx bx-map text-xl'></i> Dirección de Envío
                 </button>
+                <button @click="tab = 'payment'" :class="{ 'bg-[#F8FAF7] text-[#2E7D32] border-[#2E7D32]': tab === 'payment', 'text-[#607D8B] hover:bg-gray-50 border-transparent': tab !== 'payment' }" class="w-full text-left px-4 py-3 border-l-2 font-medium transition-colors flex items-center gap-2">
+                    <i class='bx bx-credit-card text-xl'></i> Métodos de Pago
+                </button>
+                <button @click="tab = 'bank'" :class="{ 'bg-[#F8FAF7] text-[#2E7D32] border-[#2E7D32]': tab === 'bank', 'text-[#607D8B] hover:bg-gray-50 border-transparent': tab !== 'bank' }" class="w-full text-left px-4 py-3 border-l-2 font-medium transition-colors flex items-center gap-2">
+                    <i class='bx bx-building-house text-xl'></i> Cuentas Bancarias
+                </button>
                 <button @click="tab = 'security'" :class="{ 'bg-[#F8FAF7] text-[#2E7D32] border-[#2E7D32]': tab === 'security', 'text-[#607D8B] hover:bg-gray-50 border-transparent': tab !== 'security' }" class="w-full text-left px-4 py-3 border-l-2 font-medium transition-colors flex items-center gap-2">
                     <i class='bx bx-lock-alt text-xl'></i> Seguridad
                 </button>
@@ -254,6 +260,149 @@
                                 @enderror
                             </div>
                         </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab: Payment Methods -->
+            <div x-show="tab === 'payment'" style="display: none;">
+                <div class="bg-white rounded-3xl shadow-sm border border-[#E5E7EB] overflow-hidden mb-8">
+                    <div class="px-6 py-4 border-b border-[#E5E7EB] bg-[#F8FAF7] flex justify-between items-center">
+                        <h2 class="font-outfit font-semibold text-[#263238] text-lg">Métodos de Pago Guardados</h2>
+                    </div>
+                    <div class="p-6 lg:p-8">
+                        @if(!isset($paymentMethods) || $paymentMethods->isEmpty())
+                            <div class="text-center py-8 text-[#607D8B]">
+                                <i class='bx bx-credit-card text-4xl mb-2 text-gray-300'></i>
+                                <p class="text-sm">Aún no tienes tarjetas de crédito o débito guardadas.</p>
+                            </div>
+                        @else
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+                                @foreach($paymentMethods as $pm)
+                                    <div class="p-5 border border-[#E5E7EB] rounded-2xl bg-white flex justify-between items-start shadow-sm hover:border-[#2E7D32] transition">
+                                        <div class="flex gap-4 items-center">
+                                            <div class="w-12 h-12 rounded-xl bg-[#2E7D32]/10 text-[#2E7D32] flex items-center justify-center text-2xl font-bold">
+                                                <i class='bx bx-credit-card'></i>
+                                            </div>
+                                            <div>
+                                                <h4 class="font-bold text-[#263238] text-sm">{{ $pm->card_brand }} •••• {{ $pm->last_four }}</h4>
+                                                <p class="text-xs text-[#607D8B]">{{ $pm->bank_name }} · Expira {{ $pm->expiration }}</p>
+                                                <p class="text-[11px] text-[#607D8B] mt-0.5">{{ $pm->cardholder_name }}</p>
+                                            </div>
+                                        </div>
+                                        <form action="{{ route('profile.payment-methods.destroy', $pm) }}" method="POST" onsubmit="return confirm('¿Eliminar esta tarjeta?')">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="text-red-500 hover:text-red-700 p-1 rounded-lg hover:bg-red-50 transition">
+                                                <i class='bx bx-trash text-xl'></i>
+                                            </button>
+                                        </form>
+                                    </div>
+                                @endforeach
+                            </div>
+                        @endif
+
+                        <!-- Formulario Agregar Tarjeta -->
+                        <div class="border-t border-[#E5E7EB] pt-6">
+                            <h3 class="font-bold text-[#263238] text-sm uppercase tracking-wider mb-4">Agregar Nueva Tarjeta</h3>
+                            <form action="{{ route('profile.payment-methods.store') }}" method="POST" class="space-y-4">
+                                @csrf
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                    <div>
+                                        <label class="block text-xs font-semibold text-[#263238] mb-1">Tipo de Tarjeta</label>
+                                        <select name="card_type" required class="w-full bg-[#F8FAF7] border-[#E5E7EB] rounded-xl text-sm">
+                                            <option value="credito">Tarjeta de Crédito</option>
+                                            <option value="debito">Tarjeta de Débito</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs font-semibold text-[#263238] mb-1">Nombre del Banco Emisor</label>
+                                        <input type="text" name="bank_name" placeholder="Ej: BBVA, Citibanamex, Santander" required class="w-full bg-[#F8FAF7] border-[#E5E7EB] rounded-xl text-sm">
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs font-semibold text-[#263238] mb-1">Número de Tarjeta (16 dígitos)</label>
+                                        <input type="text" name="card_number" maxlength="19" placeholder="4152 0000 0000 0000" required class="w-full bg-[#F8FAF7] border-[#E5E7EB] rounded-xl text-sm font-mono">
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs font-semibold text-[#263238] mb-1">Nombre en la Tarjeta</label>
+                                        <input type="text" name="cardholder_name" placeholder="NOMBRE COMPLETO" required class="w-full bg-[#F8FAF7] border-[#E5E7EB] rounded-xl text-sm uppercase">
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs font-semibold text-[#263238] mb-1">Fecha de Expiración</label>
+                                        <input type="text" name="expiration" placeholder="MM/AA" maxlength="5" required class="w-full bg-[#F8FAF7] border-[#E5E7EB] rounded-xl text-sm">
+                                    </div>
+                                </div>
+                                <button type="submit" class="bg-[#2E7D32] hover:bg-[#1B5E20] text-white font-bold text-sm px-6 py-2.5 rounded-xl transition shadow-sm inline-flex items-center gap-2">
+                                    <i class='bx bx-plus-circle'></i> Guardar Tarjeta
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab: Bank Accounts -->
+            <div x-show="tab === 'bank'" style="display: none;">
+                <div class="bg-white rounded-3xl shadow-sm border border-[#E5E7EB] overflow-hidden mb-8">
+                    <div class="px-6 py-4 border-b border-[#E5E7EB] bg-[#F8FAF7] flex justify-between items-center">
+                        <h2 class="font-outfit font-semibold text-[#263238] text-lg">Cuentas Bancarias de Retiro</h2>
+                    </div>
+                    <div class="p-6 lg:p-8">
+                        @if(!isset($bankMethods) || $bankMethods->isEmpty())
+                            <div class="text-center py-8 text-[#607D8B]">
+                                <i class='bx bx-building-house text-4xl mb-2 text-gray-300'></i>
+                                <p class="text-sm">No tienes cuentas bancarias asociadas para retiros.</p>
+                            </div>
+                        @else
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+                                @foreach($bankMethods as $bm)
+                                    <div class="p-5 border border-[#E5E7EB] rounded-2xl bg-white flex justify-between items-start shadow-sm hover:border-[#2E7D32] transition">
+                                        <div class="flex gap-4 items-center">
+                                            <div class="w-12 h-12 rounded-xl bg-[#D4A373]/10 text-[#D4A373] flex items-center justify-center text-2xl font-bold">
+                                                <i class='bx bx-building'></i>
+                                            </div>
+                                            <div>
+                                                <h4 class="font-bold text-[#263238] text-sm">{{ $bm->bank_name }}</h4>
+                                                <p class="text-xs font-mono text-[#607D8B]">CLABE: •••• {{ substr($bm->clabe, -4) }}</p>
+                                                <p class="text-[11px] text-[#607D8B] mt-0.5">Titular: {{ $bm->account_holder }}</p>
+                                            </div>
+                                        </div>
+                                        <form action="{{ route('profile.bank-methods.destroy', $bm) }}" method="POST" onsubmit="return confirm('¿Eliminar esta cuenta bancaria?')">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="text-red-500 hover:text-red-700 p-1 rounded-lg hover:bg-red-50 transition">
+                                                <i class='bx bx-trash text-xl'></i>
+                                            </button>
+                                        </form>
+                                    </div>
+                                @endforeach
+                            </div>
+                        @endif
+
+                        <!-- Formulario Agregar Cuenta Bancaria -->
+                        <div class="border-t border-[#E5E7EB] pt-6">
+                            <h3 class="font-bold text-[#263238] text-sm uppercase tracking-wider mb-4">Agregar Cuenta CLABE</h3>
+                            <form action="{{ route('profile.bank-methods.store') }}" method="POST" class="space-y-4">
+                                @csrf
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                    <div>
+                                        <label class="block text-xs font-semibold text-[#263238] mb-1">CLABE Interbancaria (18 dígitos)</label>
+                                        <input type="text" name="clabe" maxlength="18" placeholder="012180015487965412" required class="w-full bg-[#F8FAF7] border-[#E5E7EB] rounded-xl text-sm font-mono">
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs font-semibold text-[#263238] mb-1">Nombre del Banco</label>
+                                        <input type="text" name="bank_name" placeholder="BBVA, Banorte, Citi, etc." required class="w-full bg-[#F8FAF7] border-[#E5E7EB] rounded-xl text-sm">
+                                    </div>
+                                    <div class="sm:col-span-2">
+                                        <label class="block text-xs font-semibold text-[#263238] mb-1">Nombre del Titular de la Cuenta</label>
+                                        <input type="text" name="account_holder" value="{{ auth()->user()->name }}" required class="w-full bg-[#F8FAF7] border-[#E5E7EB] rounded-xl text-sm">
+                                    </div>
+                                </div>
+                                <button type="submit" class="bg-[#2E7D32] hover:bg-[#1B5E20] text-white font-bold text-sm px-6 py-2.5 rounded-xl transition shadow-sm inline-flex items-center gap-2">
+                                    <i class='bx bx-plus-circle'></i> Guardar Cuenta Bancaria
+                                </button>
+                            </form>
+                        </div>
                     </div>
                 </div>
             </div>

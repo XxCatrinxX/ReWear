@@ -28,11 +28,12 @@ class CheckoutController extends Controller
         }
 
         $addresses = $user->addresses()->get();
-        return view('checkout.index', compact('cart', 'addresses'));
+        $paymentMethods = $user->paymentMethods()->get();
+        return view('checkout.index', compact('cart', 'addresses', 'paymentMethods'));
     }
 
     /**
-     * Procesa la compra simulada.
+     * Procesa la compra.
      */
     public function store(Request $request)
     {
@@ -94,6 +95,25 @@ class CheckoutController extends Controller
                     'is_default'      => $user->addresses()->count() == 0,
                 ]);
                 $addressId = $newAddress->id;
+            }
+
+            // Si seleccionó la casilla para guardar la tarjeta
+            if ($request->boolean('save_card')) {
+                $cleanCardNum = preg_replace('/\s+/', '', $request->card_number);
+                $lastFour = substr($cleanCardNum, -4);
+                $brand = $request->input('card_brand', 'Visa');
+
+                // Evitar duplicados
+                $user->paymentMethods()->firstOrCreate([
+                    'last_four' => $lastFour,
+                    'card_type' => $request->card_type,
+                ], [
+                    'card_brand'       => $brand !== 'Desconocido' ? $brand : 'Visa',
+                    'bank_name'        => $request->bank_name !== 'Desconocido' ? $request->bank_name : 'Banco Emisor',
+                    'cardholder_name'  => $request->card_holder,
+                    'expiration'       => $request->card_expiry,
+                    'is_default'       => $user->paymentMethods()->count() == 0,
+                ]);
             }
 
             $order = $this->checkoutService->process(

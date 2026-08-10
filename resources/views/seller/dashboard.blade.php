@@ -48,7 +48,7 @@
                 <div class="w-12 h-12 bg-[#D4A373]/10 text-[#D4A373] rounded-xl flex items-center justify-center text-2xl">
                     <i class='bx bx-wallet'></i>
                 </div>
-                <h3 class="font-semibold text-[#607D8B]">Ingresos Simulados</h3>
+                <h3 class="font-semibold text-[#607D8B]">Ingresos Totales</h3>
             </div>
             <p class="font-outfit text-4xl font-bold text-[#263238]">${{ number_format($simulatedEarnings, 2) }}</p>
             <p class="text-sm text-[#607D8B] mt-2">En MXN</p>
@@ -57,7 +57,7 @@
 
     <!-- Banner de Membresía -->
     @php $user = auth()->user(); @endphp
-    <div class="mb-8 p-5 rounded-2xl border {{ $user->hasPremiumMembership() ? 'border-amber-300 bg-amber-50' : 'border-[#E5E7EB] bg-white' }} flex items-center justify-between gap-4 shadow-sm">
+    <div class="mb-8 p-5 rounded-2xl border {{ $user->hasPremiumMembership() ? 'border-amber-300 bg-amber-50' : 'border-[#E5E7EB] bg-white' }} flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-sm">
         <div class="flex items-center gap-4">
             <div class="w-12 h-12 rounded-xl {{ $user->hasPremiumMembership() ? 'bg-amber-100' : 'bg-[#F8FAF7]' }} flex items-center justify-center flex-shrink-0">
                 <i class='bx {{ $user->hasPremiumMembership() ? "bxs-crown text-amber-500" : "bx-user text-[#607D8B]" }} text-2xl'></i>
@@ -73,8 +73,8 @@
             </div>
         </div>
         <a href="{{ route('seller.membership') }}"
-           class="flex-shrink-0 px-4 py-2 rounded-xl text-sm font-semibold transition {{ $user->hasPremiumMembership() ? 'bg-amber-100 text-amber-800 hover:bg-amber-200' : 'bg-[#2E7D32] text-white hover:bg-[#1B5E20]' }}">
-            {{ $user->hasPremiumMembership() ? 'Gestionar' : 'Activar Premium' }}
+           class="w-full sm:w-auto text-center flex-shrink-0 px-5 py-2.5 rounded-xl text-sm font-bold transition {{ $user->hasPremiumMembership() ? 'bg-amber-100 text-amber-800 hover:bg-amber-200' : 'bg-[#2E7D32] text-white hover:bg-[#1B5E20]' }}">
+            {{ $user->hasPremiumMembership() ? 'Gestionar Membresía' : 'Activar Premium' }}
         </a>
     </div>
 

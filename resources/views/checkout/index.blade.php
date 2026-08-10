@@ -186,6 +186,27 @@
                     <h2 class="font-outfit font-semibold text-[#263238] text-xl">Método de pago seguro</h2>
                 </div>
 
+                @if(isset($paymentMethods) && $paymentMethods->count() > 0)
+                    <div class="mb-6 p-4 bg-[#F8FAF7] rounded-2xl border border-[#E5E7EB]">
+                        <h3 class="text-xs font-bold text-[#263238] uppercase tracking-wider mb-3">Tus Tarjetas Guardadas</h3>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            @foreach($paymentMethods as $pm)
+                                <button type="button" 
+                                    @click="cardNumber = '•••• •••• •••• {{ $pm->last_four }}'; cardholderName = '{{ $pm->cardholder_name }}'; expiryDate = '{{ $pm->expiration }}'; cardType = '{{ $pm->card_type }}'; detectedBank = '{{ $pm->bank_name }}'; detectedBrand = '{{ $pm->card_brand }}';"
+                                    class="p-3 bg-white border border-[#E5E7EB] rounded-xl hover:border-[#2E7D32] text-left transition flex items-center gap-3">
+                                    <div class="w-9 h-9 rounded-lg bg-[#2E7D32]/10 text-[#2E7D32] flex items-center justify-center font-bold text-lg">
+                                        <i class='bx bx-credit-card'></i>
+                                    </div>
+                                    <div>
+                                        <p class="text-xs font-bold text-[#263238]">{{ $pm->card_brand }} •••• {{ $pm->last_four }}</p>
+                                        <p class="text-[11px] text-[#607D8B]">{{ $pm->bank_name }} · {{ $pm->cardholder_name }}</p>
+                                    </div>
+                                </button>
+                            @endforeach
+                        </div>
+                    </div>
+                @endif
+
                 <!-- Tarjeta de Crédito/Débito Form -->
                 <div class="space-y-6">
                     <!-- Selección de Tipo de Tarjeta -->
@@ -258,6 +279,14 @@
                                 </div>
                             </div>
                         </div>
+                    </div>
+
+                    <!-- Casilla opcional de Guardado -->
+                    <div class="pt-2">
+                        <label class="flex items-center gap-3 cursor-pointer text-sm text-[#263238]">
+                            <input type="checkbox" name="save_card" value="1" class="rounded text-[#2E7D32] focus:ring-[#2E7D32] w-4 h-4">
+                            <span class="font-medium">Guardar esta tarjeta para futuras compras</span>
+                        </label>
                     </div>
                 </div>
             </div>

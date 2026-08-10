@@ -193,4 +193,14 @@ class User extends Authenticatable
     {
         return $this->hasMany(\App\Models\ProductReport::class);
     }
+
+    public function paymentMethods(): HasMany
+    {
+        return $this->hasMany(UserPaymentMethod::class);
+    }
+
+    public function bankMethods(): HasMany
+    {
+        return $this->hasMany(UserBankMethod::class);
+    }
 }

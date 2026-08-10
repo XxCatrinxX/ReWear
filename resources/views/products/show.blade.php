@@ -214,10 +214,10 @@
             @if(auth()->id() !== $product->user_id)
                 <form action="{{ route('products.questions.store', $product) }}" method="POST" class="mb-8">
                     @csrf
-                    <div class="flex gap-3">
+                    <div class="flex flex-col sm:flex-row gap-3">
                         <input type="text" name="question" placeholder="Escribe tu pregunta sobre la prenda..." required
-                            class="flex-1 px-4 py-3 border border-[#E5E7EB] rounded-2xl focus:ring-2 focus:ring-[#2E7D32] focus:border-transparent text-sm text-[#263238]">
-                        <button type="submit" class="btn-primary bg-[#2E7D32] hover:bg-[#1B5E20] px-6 py-3 rounded-2xl font-bold text-sm text-white flex items-center gap-2">
+                            class="w-full sm:flex-1 px-4 py-3 border border-[#E5E7EB] rounded-2xl focus:ring-2 focus:ring-[#2E7D32] focus:border-transparent text-sm text-[#263238]">
+                        <button type="submit" class="btn-primary bg-[#2E7D32] hover:bg-[#1B5E20] px-6 py-3 rounded-2xl font-bold text-sm text-white flex items-center justify-center gap-2 whitespace-nowrap">
                             <i class='bx bx-paper-plane'></i> Preguntar
                         </button>
                     </div>

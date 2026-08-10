@@ -79,6 +79,25 @@
             <form action="{{ route('seller.wallet.withdraw') }}" method="POST" class="space-y-4">
                 @csrf
 
+                @if(isset($bankMethods) && $bankMethods->count() > 0)
+                    <div class="p-3 bg-[#F8FAF7] rounded-2xl border border-[#E5E7EB]">
+                        <label class="block text-xs font-bold text-[#263238] uppercase tracking-wider mb-2">Tus Cuentas Guardadas</label>
+                        <div class="space-y-2">
+                            @foreach($bankMethods as $bm)
+                                <button type="button" 
+                                    @click="clabe = '{{ $bm->clabe }}'; bankName = '{{ $bm->bank_name }}';"
+                                    class="w-full p-2.5 bg-white border border-[#E5E7EB] rounded-xl hover:border-[#2E7D32] text-left transition flex items-center justify-between">
+                                    <div>
+                                        <p class="text-xs font-bold text-[#263238]">{{ $bm->bank_name }}</p>
+                                        <p class="text-[11px] font-mono text-[#607D8B]">•••• {{ substr($bm->clabe, -4) }}</p>
+                                    </div>
+                                    <span class="text-[10px] text-[#2E7D32] font-semibold">Usar</span>
+                                </button>
+                            @endforeach
+                        </div>
+                    </div>
+                @endif
+
                 <!-- Monto a Retirar -->
                 <div>
                     <label class="block text-xs font-bold text-[#263238] uppercase tracking-wider mb-2">Monto a retirar ($ MXN)</label>
@@ -107,7 +126,15 @@
                     </div>
                 </div>
 
-                <div class="pt-4">
+                <!-- Casilla para guardar la cuenta -->
+                <div class="pt-1">
+                    <label class="flex items-center gap-2.5 cursor-pointer text-xs text-[#263238]">
+                        <input type="checkbox" name="save_bank_account" value="1" class="rounded text-[#2E7D32] focus:ring-[#2E7D32] w-4 h-4">
+                        <span class="font-medium">Guardar esta cuenta bancaria para futuros retiros</span>
+                    </label>
+                </div>
+
+                <div class="pt-3">
                     <button type="submit" 
                         @if($user->available_balance <= 0) disabled @endif
                         class="w-full btn-primary bg-[#2E7D32] hover:bg-[#1b4d1f] py-3.5 rounded-2xl text-sm font-bold text-white shadow-md flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer">

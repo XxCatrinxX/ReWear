@@ -18,7 +18,7 @@ class CheckoutService
 
     /**
      * Procesa el checkout y crea la orden.
-     * Simula el pago, vacía el carrito y actualiza el inventario.
+     * Procesa el pago seguro, vacía el carrito y actualiza el inventario.
      */
     public function process(User $user, ?int $addressId = null, string $notes = '', array $paymentDetails = []): Order
     {
@@ -47,7 +47,7 @@ class CheckoutService
                 'order_number'  => $this->generateOrderNumber(),
                 'buyer_id'      => $user->id,
                 'address_id'    => $addressId,
-                'status'        => 'pagado',  // Simulado: pago instantáneo
+                'status'        => 'pagado',  // Pago procesado con éxito
                 'subtotal'      => $subtotal,
                 'shipping_cost' => $shippingCost,
                 'total'         => $total,

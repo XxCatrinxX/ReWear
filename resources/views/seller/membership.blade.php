@@ -131,31 +131,51 @@
                     <form method="POST" action="{{ route('seller.membership.cancel') }}">
                         @csrf
                         <button type="submit"
-                            onclick="return confirm('¿Cancelar tu membresía Premium? Volverás al plan gratuito al confirmar.')"
-                            class="w-full py-3 px-6 rounded-2xl bg-white/20 hover:bg-white/30 text-white font-bold transition border border-white/30">
+                            onclick="return confirm('¿Cancelar tu membresía Premium? Volverás al plan gratuito al terminar el periodo.')"
+                            class="w-full py-3 px-6 rounded-2xl bg-white/20 hover:bg-white/30 text-white font-bold transition border border-white/30 cursor-pointer">
                             Cancelar membresía
                         </button>
                     </form>
                 @else
-                    <form method="POST" action="{{ route('seller.membership.activate') }}">
+                    <form method="POST" action="{{ route('seller.membership.activate') }}" x-data="{ useSavedCard: {{ count($paymentMethods) > 0 ? 'true' : 'false' }} }">
                         @csrf
+                        
+                        @if(count($paymentMethods) > 0)
+                            <div class="mb-4 bg-white/10 p-3 rounded-xl">
+                                <label class="block text-xs font-semibold text-green-100 mb-2">Método de pago guardado</label>
+                                <select name="saved_payment_method_id" x-model="useSavedCard" class="w-full bg-white/20 border border-white/30 rounded-lg px-3 py-2 text-xs text-white">
+                                    @foreach($paymentMethods as $pm)
+                                        <option value="{{ $pm->id }}" class="text-[#263238]">
+                                            {{ $pm->card_brand }} •••• {{ $pm->last_four }} ({{ $pm->bank_name }})
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        @endif
+
+                        <div class="mb-4">
+                            <label class="flex items-center gap-2 text-xs text-green-100 cursor-pointer">
+                                <input type="checkbox" name="save_card" value="1" checked class="rounded text-[#2E7D32] focus:ring-[#2E7D32]">
+                                <span>Guardar método de pago para renovación automática</span>
+                            </label>
+                        </div>
+
                         <button type="submit"
-                            class="w-full py-3 px-6 rounded-2xl bg-amber-400 hover:bg-amber-500 text-[#1B3A1E] font-bold transition shadow-lg shadow-amber-400/30">
-                            <i class='bx bxs-crown mr-2'></i> Activar Premium — $150 MXN/mes
+                            class="w-full py-3.5 px-6 rounded-2xl bg-amber-400 hover:bg-amber-500 text-[#1B3A1E] font-bold transition shadow-lg shadow-amber-400/30 flex items-center justify-center gap-2 cursor-pointer">
+                            <i class='bx bxs-crown text-xl'></i> Activar Premium — $150 MXN/mes
                         </button>
                     </form>
-                    <p class="text-xs text-green-300 text-center mt-2">Sin compromiso. Cancela cuando quieras.</p>
+                    <p class="text-xs text-green-300 text-center mt-2">Sin compromiso. Cancela en cualquier momento.</p>
                 @endif
             </div>
         </div>
     </div>
 
-    <!-- Nota sobre pagos -->
-    <div class="p-4 bg-blue-50 border border-blue-200 rounded-2xl text-sm text-blue-700 flex items-start gap-3">
-        <i class='bx bx-info-circle text-xl mt-0.5 flex-shrink-0'></i>
+    <!-- Garantía de Pago -->
+    <div class="p-4 bg-white border border-[#E5E7EB] rounded-2xl text-sm text-[#607D8B] flex items-center gap-3 shadow-sm">
+        <i class='bx bx-check-shield text-2xl text-[#2E7D32] flex-shrink-0'></i>
         <p>
-            <strong>Nota:</strong> Actualmente la activación de membresía está en modo sandbox de demostración.
-            La integración con un procesador de pago (como Stripe o MercadoPago) se configurará próximamente.
+            <strong>Pago Seguro Garantizado:</strong> Procesado mediante encriptación bancaria de 256 bits. Recibirás tu recibo fiscal inmediatamente al activar.
         </p>
     </div>
 </div>

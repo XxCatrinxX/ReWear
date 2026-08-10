@@ -57,6 +57,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/profile/become-seller', [ProfileController::class, 'becomeSeller'])->name('profile.become-seller.store');
     Route::post('/profile/address', [ProfileController::class, 'storeAddress'])->name('addresses.store');
 
+    // Métodos Financieros (Tarjetas y Cuentas Bancarias)
+    Route::post('/profile/payment-methods', [\App\Http\Controllers\UserFinancialMethodsController::class, 'storePaymentMethod'])->name('profile.payment-methods.store');
+    Route::delete('/profile/payment-methods/{paymentMethod}', [\App\Http\Controllers\UserFinancialMethodsController::class, 'destroyPaymentMethod'])->name('profile.payment-methods.destroy');
+    Route::post('/profile/bank-methods', [\App\Http\Controllers\UserFinancialMethodsController::class, 'storeBankMethod'])->name('profile.bank-methods.store');
+    Route::delete('/profile/bank-methods/{bankMethod}', [\App\Http\Controllers\UserFinancialMethodsController::class, 'destroyBankMethod'])->name('profile.bank-methods.destroy');
+
     // Preguntas y Respuestas sobre Productos
     Route::post('/products/{product}/questions', [ProductQuestionController::class, 'store'])->name('products.questions.store');
     Route::post('/questions/{question}/answer', [ProductQuestionController::class, 'answer'])->name('questions.answer');

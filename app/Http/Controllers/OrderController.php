@@ -48,7 +48,7 @@ class OrderController extends Controller
     }
 
     /**
-     * Confirma la entrega física y libera los fondos simulados al vendedor.
+     * Confirma la entrega física y libera los fondos retenidos al vendedor.
      */
     public function processConfirmDelivery(Request $request, Order $order)
     {

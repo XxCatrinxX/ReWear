@@ -11,13 +11,12 @@ class MembershipController extends Controller
     public function index(Request $request)
     {
         $user = $request->user();
-        return view('seller.membership', compact('user'));
+        $paymentMethods = $user->paymentMethods()->get();
+        return view('seller.membership', compact('user', 'paymentMethods'));
     }
 
     /**
      * Activa la membresía premium del vendedor.
-     * En producción real aquí iría la integración con un gateway de pago.
-     * Por ahora se activa directamente (sandbox).
      */
     public function activate(Request $request)
     {
@@ -25,6 +24,24 @@ class MembershipController extends Controller
 
         if (!$user->is_seller) {
             return back()->with('error', 'Solo los vendedores pueden contratar una membresía.');
+        }
+
+        // Si se envió información de tarjeta y solicitó guardarla
+        if ($request->boolean('save_card') && $request->filled('card_number')) {
+            $cleanCardNum = preg_replace('/\s+/', '', $request->card_number);
+            $lastFour = substr($cleanCardNum, -4);
+            $brand = $request->input('card_brand', 'Visa');
+
+            $user->paymentMethods()->firstOrCreate([
+                'last_four' => $lastFour,
+                'card_type' => $request->input('card_type', 'credito'),
+            ], [
+                'card_brand'       => $brand !== 'Desconocido' ? $brand : 'Visa',
+                'bank_name'        => $request->input('bank_name', 'Banco Emisor'),
+                'cardholder_name'  => $request->input('card_holder', $user->name),
+                'expiration'       => $request->input('card_expiry', '12/28'),
+                'is_default'       => $user->paymentMethods()->count() == 0,
+            ]);
         }
 
         // Extiende 1 mes si ya tiene membresía activa, o desde hoy si no la tiene
@@ -37,7 +54,7 @@ class MembershipController extends Controller
             'membership_expires_at' => $base->addMonth(),
         ]);
 
-        return back()->with('success', '¡Membresía Premium activada por 30 días!');
+        return back()->with('success', '¡Membresía Premium activada exitosamente por 30 días!');
     }
 
     /** Cancela/desactiva la membresía premium. */

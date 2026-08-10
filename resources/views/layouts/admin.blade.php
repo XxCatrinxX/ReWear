@@ -18,7 +18,7 @@
     <!-- Styles / Scripts -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body class="font-sans antialiased bg-[#F8FAF7] text-[#263238] min-h-screen flex selection:bg-[#D4A373] selection:text-white" x-data="{ sidebarOpen: true }">
+<body class="font-sans antialiased bg-[#F8FAF7] text-[#263238] min-h-screen flex selection:bg-[#D4A373] selection:text-white" x-data="{ sidebarOpen: false }">
     
     <!-- Sidebar -->
     <aside :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full'" class="fixed inset-y-0 left-0 z-50 w-64 bg-white border-r border-[#E5E7EB] transition-transform duration-300 ease-in-out md:relative md:translate-x-0">
@@ -27,7 +27,7 @@
                 <div class="w-8 h-8 bg-[#2E7D32] rounded-lg flex items-center justify-center text-white font-outfit font-bold text-lg">RW</div>
                 <span class="font-outfit font-bold text-xl tracking-tight text-[#2E7D32]">Admin</span>
             </a>
-            <button @click="sidebarOpen = false" class="md:hidden text-[#607D8B]">
+            <button @click="sidebarOpen = false" class="md:hidden text-[#607D8B] p-2 hover:text-[#263238]">
                 <i class='bx bx-x text-2xl'></i>
             </button>
         </div>
@@ -61,6 +61,13 @@
                     <span class="ml-auto bg-red-500 text-white text-[10px] font-bold rounded-full px-1.5 py-0.5 min-w-[18px] text-center">{{ $pendingCount }}</span>
                 @endif
             </a>
+
+            <div class="pt-4 border-t border-[#E5E7EB] mt-4">
+                <a href="{{ route('home') }}" class="flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-xl text-[#2E7D32] bg-[#2E7D32]/10 hover:bg-[#2E7D32]/20 transition-colors">
+                    <i class='bx bx-store text-xl'></i>
+                    Ir a la Tienda
+                </a>
+            </div>
         </nav>
     </aside>
 
@@ -68,18 +75,21 @@
     <div class="flex-1 flex flex-col min-h-screen overflow-hidden">
         <!-- Top Navbar -->
         <header class="bg-white border-b border-[#E5E7EB] h-20 flex items-center justify-between px-4 sm:px-6 lg:px-8">
-            <button @click="sidebarOpen = true" class="md:hidden text-[#607D8B]">
+            <button @click="sidebarOpen = true" class="md:hidden text-[#607D8B] p-2 hover:text-[#263238]">
                 <i class='bx bx-menu text-2xl'></i>
             </button>
             
             <div class="flex-1 flex items-center justify-end">
                 <div class="flex items-center gap-4">
-                    <a href="{{ route('home') }}" class="text-sm font-medium text-[#607D8B] hover:text-[#2E7D32] hidden sm:block">Ir a la tienda</a>
+                    <a href="{{ route('home') }}" class="text-sm font-semibold text-[#2E7D32] hover:underline flex items-center gap-1.5 px-3 py-1.5 bg-[#2E7D32]/10 rounded-xl">
+                        <i class='bx bx-store text-base'></i>
+                        <span>Ir a la tienda</span>
+                    </a>
                     
-                    <div class="h-8 w-px bg-[#E5E7EB] mx-2"></div>
+                    <div class="h-8 w-px bg-[#E5E7EB] mx-1"></div>
                     
                     <div class="flex items-center gap-3">
-                        <img class="w-10 h-10 rounded-full object-cover" src="{{ auth()->user()->avatar_url }}" alt="Admin">
+                        <img class="w-10 h-10 rounded-full object-cover border border-[#E5E7EB]" src="{{ auth()->user()->avatar_url }}" alt="Admin">
                         <div class="hidden md:block text-right">
                             <p class="text-sm font-medium text-[#263238]">{{ auth()->user()->name }}</p>
                             <p class="text-xs text-[#607D8B]">Administrador</p>

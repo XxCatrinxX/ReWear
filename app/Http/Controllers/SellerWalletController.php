@@ -14,8 +14,9 @@ class SellerWalletController extends Controller
     {
         $user = $request->user();
         $withdrawals = $user->withdrawals()->latest()->paginate(10);
+        $bankMethods = $user->bankMethods()->get();
 
-        return view('seller.wallet.index', compact('user', 'withdrawals'));
+        return view('seller.wallet.index', compact('user', 'withdrawals', 'bankMethods'));
     }
 
     /**
@@ -39,11 +40,22 @@ class SellerWalletController extends Controller
         $clabe = $request->input('clabe');
         $bankName = $request->input('bank_name');
 
-        // Guardar CLABE y Banco en el usuario para compras/retiros futuros
+        // Guardar CLABE y Banco en el perfil principal del usuario
         $user->update([
             'clabe' => $clabe,
             'bank_name' => $bankName,
         ]);
+
+        // Si seleccionó guardar en su catálogo de cuentas bancarias
+        if ($request->boolean('save_bank_account')) {
+            $user->bankMethods()->firstOrCreate([
+                'clabe' => $clabe,
+            ], [
+                'bank_name'      => $bankName,
+                'account_holder' => $request->input('account_holder', $user->name),
+                'is_default'     => $user->bankMethods()->count() == 0,
+            ]);
+        }
 
         // Descontar del saldo disponible
         $user->decrement('available_balance', $amount);
