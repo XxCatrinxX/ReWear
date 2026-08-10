@@ -26,22 +26,43 @@ class MembershipController extends Controller
             return back()->with('error', 'Solo los vendedores pueden contratar una membresía.');
         }
 
-        // Si se envió información de tarjeta y solicitó guardarla
-        if ($request->boolean('save_card') && $request->filled('card_number')) {
-            $cleanCardNum = preg_replace('/\s+/', '', $request->card_number);
-            $lastFour = substr($cleanCardNum, -4);
-            $brand = $request->input('card_brand', 'Visa');
-
-            $user->paymentMethods()->firstOrCreate([
-                'last_four' => $lastFour,
-                'card_type' => $request->input('card_type', 'credito'),
+        // Si usó una tarjeta guardada
+        if ($request->filled('saved_payment_method_id')) {
+            $savedCard = $user->paymentMethods()->find($request->input('saved_payment_method_id'));
+            if (!$savedCard) {
+                return back()->with('error', 'El método de pago guardado seleccionado no existe.');
+            }
+        } else {
+            // Si no tiene tarjeta guardada o eligió ingresar una nueva, validar campos obligatorios
+            $request->validate([
+                'card_number' => ['required', 'string', 'min:12', 'max:20'],
+                'card_holder' => ['required', 'string', 'max:150'],
+                'card_expiry' => ['required', 'string', 'max:5'],
+                'card_cvv'    => ['required', 'string', 'min:3', 'max:4'],
             ], [
-                'card_brand'       => $brand !== 'Desconocido' ? $brand : 'Visa',
-                'bank_name'        => $request->input('bank_name', 'Banco Emisor'),
-                'cardholder_name'  => $request->input('card_holder', $user->name),
-                'expiration'       => $request->input('card_expiry', '12/28'),
-                'is_default'       => $user->paymentMethods()->count() == 0,
+                'card_number.required' => 'El número de tarjeta es obligatorio para activar el plan Premium.',
+                'card_holder.required' => 'El nombre del titular es obligatorio.',
+                'card_expiry.required' => 'La fecha de expiración es obligatoria.',
+                'card_cvv.required'    => 'El código CVV es obligatorio.',
             ]);
+
+            // Guardar si eligió recordar tarjeta
+            if ($request->boolean('save_card')) {
+                $cleanCardNum = preg_replace('/\s+/', '', $request->card_number);
+                $lastFour = substr($cleanCardNum, -4);
+                $brand = $request->input('card_brand', 'Visa');
+
+                $user->paymentMethods()->firstOrCreate([
+                    'last_four' => $lastFour,
+                    'card_type' => $request->input('card_type', 'credito'),
+                ], [
+                    'card_brand'       => $brand !== 'Desconocido' ? $brand : 'Visa',
+                    'bank_name'        => $request->input('bank_name', 'Banco Emisor'),
+                    'cardholder_name'  => $request->card_holder,
+                    'expiration'       => $request->card_expiry,
+                    'is_default'       => $user->paymentMethods()->count() == 0,
+                ]);
+            }
         }
 
         // Extiende 1 mes si ya tiene membresía activa, o desde hoy si no la tiene

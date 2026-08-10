@@ -137,32 +137,82 @@
                         </button>
                     </form>
                 @else
-                    <form method="POST" action="{{ route('seller.membership.activate') }}" x-data="{ useSavedCard: {{ count($paymentMethods) > 0 ? 'true' : 'false' }} }">
+                    <form method="POST" action="{{ route('seller.membership.activate') }}" x-data="{ 
+                        paymentOption: '{{ count($paymentMethods) > 0 ? "saved" : "new" }}',
+                        cardNumber: '',
+                        cardHolder: '',
+                        cardExpiry: '',
+                        cardCvv: '' 
+                    }">
                         @csrf
                         
-                        @if(count($paymentMethods) > 0)
-                            <div class="mb-4 bg-white/10 p-3 rounded-xl">
-                                <label class="block text-xs font-semibold text-green-100 mb-2">Método de pago guardado</label>
-                                <select name="saved_payment_method_id" x-model="useSavedCard" class="w-full bg-white/20 border border-white/30 rounded-lg px-3 py-2 text-xs text-white">
-                                    @foreach($paymentMethods as $pm)
-                                        <option value="{{ $pm->id }}" class="text-[#263238]">
-                                            {{ $pm->card_brand }} •••• {{ $pm->last_four }} ({{ $pm->bank_name }})
-                                        </option>
-                                    @endforeach
-                                </select>
-                            </div>
-                        @endif
+                        <div class="space-y-4 mb-6">
+                            @if(count($paymentMethods) > 0)
+                                <div class="bg-white/10 p-4 rounded-2xl border border-white/20">
+                                    <label class="flex items-center gap-2 text-xs font-bold text-white mb-3 cursor-pointer">
+                                        <input type="radio" name="payment_mode" value="saved" x-model="paymentOption" class="text-amber-400">
+                                        Usar tarjeta guardada
+                                    </label>
 
-                        <div class="mb-4">
-                            <label class="flex items-center gap-2 text-xs text-green-100 cursor-pointer">
-                                <input type="checkbox" name="save_card" value="1" checked class="rounded text-[#2E7D32] focus:ring-[#2E7D32]">
-                                <span>Guardar método de pago para renovación automática</span>
-                            </label>
+                                    <div x-show="paymentOption === 'saved'">
+                                        <select name="saved_payment_method_id" class="w-full bg-white/20 border border-white/30 rounded-xl px-3 py-2 text-xs text-white">
+                                            @foreach($paymentMethods as $pm)
+                                                <option value="{{ $pm->id }}" class="text-[#263238]">
+                                                    {{ $pm->card_brand }} •••• {{ $pm->last_four }} ({{ $pm->bank_name }})
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                </div>
+                            @endif
+
+                            <div class="bg-white/10 p-4 rounded-2xl border border-white/20">
+                                @if(count($paymentMethods) > 0)
+                                    <label class="flex items-center gap-2 text-xs font-bold text-white mb-3 cursor-pointer">
+                                        <input type="radio" name="payment_mode" value="new" x-model="paymentOption" @click="document.querySelector('select[name=saved_payment_method_id]').value = ''" class="text-amber-400">
+                                        Ingresar nueva tarjeta de crédito / débito
+                                    </label>
+                                @else
+                                    <p class="text-xs font-bold text-white mb-3">Método de pago (Tarjeta de Crédito / Débito)</p>
+                                @endif
+
+                                <div x-show="paymentOption === 'new'" class="space-y-3">
+                                    <div>
+                                        <label class="block text-[10px] uppercase font-bold text-green-200 mb-1">Número de tarjeta</label>
+                                        <input type="text" name="card_number" x-model="cardNumber" placeholder="4152 0000 0000 0000" maxlength="19"
+                                            class="w-full bg-white/20 border border-white/30 rounded-xl px-3 py-2 text-xs text-white placeholder-white/40 font-mono">
+                                    </div>
+                                    <div>
+                                        <label class="block text-[10px] uppercase font-bold text-green-200 mb-1">Nombre en la tarjeta</label>
+                                        <input type="text" name="card_holder" x-model="cardHolder" placeholder="NOMBRE COMPLETO"
+                                            class="w-full bg-white/20 border border-white/30 rounded-xl px-3 py-2 text-xs text-white placeholder-white/40 uppercase">
+                                    </div>
+                                    <div class="grid grid-cols-2 gap-2">
+                                        <div>
+                                            <label class="block text-[10px] uppercase font-bold text-green-200 mb-1">Expiración</label>
+                                            <input type="text" name="card_expiry" x-model="cardExpiry" placeholder="MM/AA" maxlength="5"
+                                                class="w-full bg-white/20 border border-white/30 rounded-xl px-3 py-2 text-xs text-center text-white placeholder-white/40">
+                                        </div>
+                                        <div>
+                                            <label class="block text-[10px] uppercase font-bold text-green-200 mb-1">CVV</label>
+                                            <input type="password" name="card_cvv" x-model="cardCvv" placeholder="•••" maxlength="4"
+                                                class="w-full bg-white/20 border border-white/30 rounded-xl px-3 py-2 text-xs text-center text-white placeholder-white/40">
+                                        </div>
+                                    </div>
+
+                                    <div class="pt-2">
+                                        <label class="flex items-center gap-2 text-xs text-green-100 cursor-pointer">
+                                            <input type="checkbox" name="save_card" value="1" checked class="rounded text-[#2E7D32] focus:ring-[#2E7D32]">
+                                            <span>Guardar tarjeta para futuras renovaciones</span>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
 
                         <button type="submit"
                             class="w-full py-3.5 px-6 rounded-2xl bg-amber-400 hover:bg-amber-500 text-[#1B3A1E] font-bold transition shadow-lg shadow-amber-400/30 flex items-center justify-center gap-2 cursor-pointer">
-                            <i class='bx bxs-crown text-xl'></i> Activar Premium — $150 MXN/mes
+                            <i class='bx bxs-crown text-xl'></i> Confirmar y Activar Premium ($150 MXN/mes)
                         </button>
                     </form>
                     <p class="text-xs text-green-300 text-center mt-2">Sin compromiso. Cancela en cualquier momento.</p>

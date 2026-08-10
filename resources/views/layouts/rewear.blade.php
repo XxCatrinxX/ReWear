@@ -33,7 +33,7 @@
     [x-cloak] { display: none !important; }
     </style>
 </head>
-<body class="font-sans antialiased bg-[#F8FAF7] text-[#263238] min-h-screen flex flex-col selection:bg-[#D4A373] selection:text-white pb-20 md:pb-0">
+<body class="font-sans antialiased bg-[#F8FAF7] text-[#263238] min-h-screen flex flex-col selection:bg-[#D4A373] selection:text-white pb-20 md:pb-0 overflow-x-hidden w-full">
     
     <!-- Navbar -->
     <nav class="bg-white/80 backdrop-blur-md sticky top-0 z-50 border-b border-[#E5E7EB] shadow-sm" x-data="{ mobileMenuOpen: false }">
@@ -286,47 +286,47 @@
     </footer>
 
     <!-- ───────────────── BARRA NAVEGACIÓN INFERIOR MÓVIL (ANDROID / PWA) ───────────────── -->
-    <nav class="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-lg border-t border-[#E5E7EB] px-1 py-1.5 shadow-card flex justify-around items-center text-[10px]">
-        <a href="{{ route('home') }}" class="flex flex-col items-center py-1 px-2 font-medium {{ request()->routeIs('home') ? 'text-[#2E7D32]' : 'text-[#607D8B]' }}">
+    <nav class="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-lg border-t border-[#E5E7EB] px-1 py-1 shadow-card flex justify-between items-center text-[10px] w-full max-w-full overflow-hidden">
+        <a href="{{ route('home') }}" class="flex-1 flex flex-col items-center py-1 px-1 font-medium min-w-0 {{ request()->routeIs('home') ? 'text-[#2E7D32]' : 'text-[#607D8B]' }}">
             <i class='bx {{ request()->routeIs('home') ? 'bxs-home' : 'bx-home' }} text-xl mb-0.5'></i>
-            <span>Inicio</span>
+            <span class="truncate max-w-full">Inicio</span>
         </a>
 
-        <a href="{{ route('catalog') }}" class="flex flex-col items-center py-1 px-2 font-medium {{ request()->routeIs('catalog*') ? 'text-[#2E7D32]' : 'text-[#607D8B]' }}">
+        <a href="{{ route('catalog') }}" class="flex-1 flex flex-col items-center py-1 px-1 font-medium min-w-0 {{ request()->routeIs('catalog*') ? 'text-[#2E7D32]' : 'text-[#607D8B]' }}">
             <i class='bx {{ request()->routeIs('catalog*') ? 'bxs-store' : 'bx-store' }} text-xl mb-0.5'></i>
-            <span>Catálogo</span>
+            <span class="truncate max-w-full">Catálogo</span>
         </a>
 
         @auth
-            <a href="{{ route('orders.index') }}" class="flex flex-col items-center py-1 px-2 font-medium {{ request()->routeIs('orders*') && !request()->routeIs('seller.orders*') ? 'text-[#2E7D32]' : 'text-[#607D8B]' }}">
+            <a href="{{ route('orders.index') }}" class="flex-1 flex flex-col items-center py-1 px-1 font-medium min-w-0 {{ request()->routeIs('orders*') && !request()->routeIs('seller.orders*') ? 'text-[#2E7D32]' : 'text-[#607D8B]' }}">
                 <i class='bx {{ request()->routeIs('orders*') && !request()->routeIs('seller.orders*') ? 'bxs-package' : 'bx-package' }} text-xl mb-0.5'></i>
-                <span>Compras</span>
+                <span class="truncate max-w-full">Compras</span>
             </a>
 
             @if(auth()->user()->isSeller())
-                <a href="{{ route('seller.dashboard') }}" class="flex flex-col items-center py-1 px-2 font-semibold text-[#D4A373]">
-                    <div class="w-9 h-9 -mt-4 bg-[#D4A373] text-white rounded-full flex items-center justify-center shadow-md border-2 border-white">
-                        <i class='bx bx-store-alt text-lg'></i>
+                <a href="{{ route('seller.dashboard') }}" class="flex-1 flex flex-col items-center py-1 px-1 font-semibold text-[#D4A373] min-w-0">
+                    <div class="w-8 h-8 -mt-3 bg-[#D4A373] text-white rounded-full flex items-center justify-center shadow-md border-2 border-white">
+                        <i class='bx bx-store-alt text-base'></i>
                     </div>
-                    <span class="mt-0.5">Ventas</span>
+                    <span class="mt-0.5 truncate max-w-full">Ventas</span>
                 </a>
             @else
-                <a href="{{ route('seller.products.create') }}" class="flex flex-col items-center py-1 px-2 font-semibold text-[#D4A373]">
-                    <div class="w-9 h-9 -mt-4 bg-[#D4A373] text-white rounded-full flex items-center justify-center shadow-md border-2 border-white">
-                        <i class='bx bx-plus text-lg'></i>
+                <a href="{{ route('seller.products.create') }}" class="flex-1 flex flex-col items-center py-1 px-1 font-semibold text-[#D4A373] min-w-0">
+                    <div class="w-8 h-8 -mt-3 bg-[#D4A373] text-white rounded-full flex items-center justify-center shadow-md border-2 border-white">
+                        <i class='bx bx-plus text-base'></i>
                     </div>
-                    <span class="mt-0.5">Vender</span>
+                    <span class="mt-0.5 truncate max-w-full">Vender</span>
                 </a>
             @endif
 
-            <a href="{{ route('dashboard') }}" class="flex flex-col items-center py-1 px-2 font-medium {{ request()->routeIs('dashboard', 'profile*') ? 'text-[#2E7D32]' : 'text-[#607D8B]' }}">
+            <a href="{{ route('dashboard') }}" class="flex-1 flex flex-col items-center py-1 px-1 font-medium min-w-0 {{ request()->routeIs('dashboard', 'profile*') ? 'text-[#2E7D32]' : 'text-[#607D8B]' }}">
                 <i class='bx {{ request()->routeIs('dashboard', 'profile*') ? 'bxs-user' : 'bx-user' }} text-xl mb-0.5'></i>
-                <span>Mi Cuenta</span>
+                <span class="truncate max-w-full">Mi Cuenta</span>
             </a>
         @else
-            <a href="{{ route('login') }}" class="flex flex-col items-center py-1 px-2 font-medium text-[#2E7D32]">
+            <a href="{{ route('login') }}" class="flex-1 flex flex-col items-center py-1 px-1 font-medium text-[#2E7D32] min-w-0">
                 <i class='bx bx-log-in text-xl mb-0.5'></i>
-                <span>Ingresar</span>
+                <span class="truncate max-w-full">Ingresar</span>
             </a>
         @endauth
     </nav>

@@ -5,15 +5,15 @@
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8" x-data="{ mainImage: '{{ $product->cover_url }}' }">
     
     <!-- Breadcrumbs -->
-    <nav class="flex text-sm text-[#607D8B] mb-8">
-        <ol class="flex items-center space-x-2">
-            <li><a href="{{ route('home') }}" class="hover:text-[#2E7D32]">Inicio</a></li>
-            <li><i class='bx bx-chevron-right'></i></li>
-            <li><a href="{{ route('catalog') }}" class="hover:text-[#2E7D32]">Catálogo</a></li>
-            <li><i class='bx bx-chevron-right'></i></li>
-            <li><a href="{{ route('catalog', ['category' => $product->category->slug]) }}" class="hover:text-[#2E7D32]">{{ $product->category->name }}</a></li>
-            <li><i class='bx bx-chevron-right'></i></li>
-            <li class="text-[#263238] font-medium truncate max-w-[200px]">{{ $product->title }}</li>
+    <nav class="w-full max-w-full overflow-hidden text-xs sm:text-sm text-[#607D8B] mb-6">
+        <ol class="flex flex-wrap items-center gap-1 sm:gap-2 leading-relaxed">
+            <li><a href="{{ route('home') }}" class="hover:text-[#2E7D32] whitespace-nowrap">Inicio</a></li>
+            <li><i class='bx bx-chevron-right text-xs'></i></li>
+            <li><a href="{{ route('catalog') }}" class="hover:text-[#2E7D32] whitespace-nowrap">Catálogo</a></li>
+            <li><i class='bx bx-chevron-right text-xs'></i></li>
+            <li><a href="{{ route('catalog', ['category' => $product->category->slug]) }}" class="hover:text-[#2E7D32] whitespace-nowrap truncate max-w-[120px] sm:max-w-none inline-block align-middle">{{ $product->category->name }}</a></li>
+            <li><i class='bx bx-chevron-right text-xs'></i></li>
+            <li class="text-[#263238] font-medium truncate max-w-[130px] sm:max-w-[250px] inline-block align-middle">{{ $product->title }}</li>
         </ol>
     </nav>
 
