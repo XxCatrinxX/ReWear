@@ -93,6 +93,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/orders/{order}/messages', [OrderMessageController::class, 'index'])->name('orders.messages.index');
     Route::post('/orders/{order}/messages', [OrderMessageController::class, 'store'])->name('orders.messages.store');
 
+    // Reportes de pedidos/envíos por parte del comprador
+    Route::post('/orders/{order}/report', [\App\Http\Controllers\OrderReportController::class, 'store'])->name('orders.report.store');
+
     // Reportes de publicaciones
     Route::post('/products/{product}/report', [ProductReportController::class, 'store'])->name('products.report');
 });
@@ -160,9 +163,10 @@ Route::middleware(['auth', 'verified', 'admin'])->prefix('admin')->name('admin.'
     Route::get('/orders/{order}', [AdminOrderController::class, 'show'])->name('orders.show');
     Route::patch('/orders/{order}/status', [AdminOrderController::class, 'updateStatus'])->name('orders.update-status');
 
-    // Reportes de publicaciones
+    // Reportes de publicaciones y envíos
     Route::get('/reports', [AdminReportController::class, 'index'])->name('reports.index');
     Route::patch('/reports/{report}', [AdminReportController::class, 'update'])->name('reports.update');
+    Route::patch('/reports/orders/{report}', [AdminReportController::class, 'updateOrderReport'])->name('reports.order.update');
 
     // Gestión de membresías
     Route::patch('/users/{user}/membership', [AdminUserController::class, 'toggleMembership'])->name('users.membership');

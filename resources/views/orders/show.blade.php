@@ -205,6 +205,66 @@
             </div>
             @endif
 
+            <!-- Tarjeta de Reporte de Problemas con el Pedido/Envío -->
+            <div class="bg-white rounded-3xl shadow-sm border border-[#E5E7EB] overflow-hidden p-6" x-data="{ openReportModal: false }">
+                <h2 class="font-outfit font-semibold text-[#263238] text-lg mb-2">¿Tienes un problema?</h2>
+                <p class="text-xs text-[#607D8B] mb-4">Si la prenda presenta fallas o tienes problemas con la paquetería, envía un reporte.</p>
+                
+                @php $existingReports = $order->reports; @endphp
+                
+                @if($existingReports->isNotEmpty())
+                    <div class="mb-4 space-y-2">
+                        <p class="text-xs font-bold text-[#263238]">Historial de reportes en esta compra:</p>
+                        @foreach($existingReports as $rep)
+                            <div class="p-3 bg-[#F8FAF7] border border-[#E5E7EB] rounded-2xl text-xs">
+                                <div class="flex justify-between items-center mb-1">
+                                    <span class="font-semibold text-[#263238]">{{ $rep->reason }}</span>
+                                    @php $st = \App\Models\OrderReport::$statuses[$rep->status] ?? ['label' => $rep->status, 'bg' => 'bg-gray-100 text-gray-800']; @endphp
+                                    <span class="px-2 py-0.5 rounded-full text-[10px] font-bold {{ $st['bg'] }}">{{ $st['label'] }}</span>
+                                </div>
+                                <p class="text-[#607D8B] text-[11px] mb-1">{{ $rep->description }}</p>
+                                @if($rep->admin_notes)
+                                    <p class="text-[11px] text-[#2E7D32] bg-green-50 p-2 rounded-xl border border-green-200">
+                                        <strong>Respuesta Admin:</strong> {{ $rep->admin_notes }}
+                                    </p>
+                                @endif
+                            </div>
+                        @endforeach
+                    </div>
+                @endif
+
+                <button @click="openReportModal = !openReportModal" class="w-full py-2.5 px-4 bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200 rounded-2xl text-xs font-bold transition flex items-center justify-center gap-2">
+                    <i class='bx bx-flag text-base'></i> Reportar problema con el envío o prenda
+                </button>
+
+                <div x-show="openReportModal" x-cloak class="mt-4 pt-4 border-t border-[#E5E7EB]">
+                    <form action="{{ route('orders.report.store', $order) }}" method="POST" class="space-y-3">
+                        @csrf
+                        <div>
+                            <label class="block text-[11px] font-bold uppercase text-[#607D8B] mb-1">Tipo de problema</label>
+                            <select name="type" class="w-full rounded-xl border border-[#E5E7EB] px-3 py-2 text-xs text-[#263238] bg-[#F8FAF7]">
+                                <option value="envio">Problema con la paquetería / Envío</option>
+                                <option value="producto">Problema con la prenda (Diferente / Defectuosa)</option>
+                                <option value="otro">Otro inconveniente</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-bold uppercase text-[#607D8B] mb-1">Motivo corto</label>
+                            <input type="text" name="reason" placeholder="Ej. Paquete retrasado o dañada la prenda" required
+                                class="w-full rounded-xl border border-[#E5E7EB] px-3 py-2 text-xs text-[#263238] bg-[#F8FAF7]">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-bold uppercase text-[#607D8B] mb-1">Descripción detallada</label>
+                            <textarea name="description" rows="3" placeholder="Explica lo sucedido con el mayor detalle posible..." required
+                                class="w-full rounded-xl border border-[#E5E7EB] px-3 py-2 text-xs text-[#263238] bg-[#F8FAF7]"></textarea>
+                        </div>
+                        <button type="submit" class="w-full py-2.5 bg-red-600 hover:bg-red-700 text-white font-bold text-xs rounded-xl transition shadow-sm">
+                            Enviar Reporte a Soporte
+                        </button>
+                    </form>
+                </div>
+            </div>
+
         </div>
 
     </div>

@@ -85,4 +85,9 @@ class Order extends Model
     {
         return $this->hasMany(OrderMessage::class)->orderBy('created_at', 'asc');
     }
+
+    public function reports(): HasMany
+    {
+        return $this->hasMany(OrderReport::class)->latest();
+    }
 }
