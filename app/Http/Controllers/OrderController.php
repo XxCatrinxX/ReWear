@@ -44,7 +44,9 @@ class OrderController extends Controller
         }
 
         $order->load(['items.product', 'items.seller', 'address', 'shipment']);
-        return view('orders.confirm-delivery', compact('order'));
+        $confirmationUrl = route('orders.confirm-delivery', $order);
+
+        return view('orders.confirm-delivery', compact('order', 'confirmationUrl'));
     }
 
     /**
@@ -68,18 +70,22 @@ class OrderController extends Controller
             ]);
         }
 
-        // Liberar el dinero de saldo pendiente a saldo disponible para cada vendedor
+        // Liberar el dinero neto (subtotal - 5% comisión - $50 envío) de saldo pendiente a saldo disponible para cada vendedor
         foreach ($order->items as $item) {
             $seller = \App\Models\User::find($item->seller_id);
             if ($seller) {
-                $amount = $item->subtotal;
+                $itemSubtotal = $item->subtotal;
+                $commission   = $itemSubtotal * 0.05;
+                $shippingCost = 50.00;
+                $netEarnings  = max(0, $itemSubtotal - $commission - $shippingCost);
+
                 // Prevenir saldos negativos en caso de ajuste manual
-                $deduct = min($seller->pending_balance, $amount);
+                $deduct = min($seller->pending_balance, $netEarnings);
                 $seller->decrement('pending_balance', $deduct);
-                $seller->increment('available_balance', $amount);
+                $seller->increment('available_balance', $netEarnings);
             }
         }
 
-        return redirect()->route('orders.show', $order)->with('success', '¡Entrega confirmada! Los fondos se han liberado y están disponibles en la billetera del vendedor.');
+        return redirect()->route('orders.show', $order)->with('success', '¡Entrega confirmada! Los fondos netos se han liberado y están disponibles en la billetera del vendedor.');
     }
 }

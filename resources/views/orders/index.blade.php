@@ -32,7 +32,12 @@
                             </div>
                         </div>
                         
-                        <div>
+                        <div class="flex items-center gap-2">
+                            @if($order->status === 'enviado')
+                                <a href="{{ route('orders.confirm-delivery', $order) }}" class="inline-flex items-center gap-1 bg-[#2E7D32] text-white hover:bg-[#1B5E20] px-4 py-2 rounded-xl text-sm font-semibold transition-colors shadow-sm">
+                                    <i class='bx bx-qr-scan text-base'></i> Recibir pedido
+                                </a>
+                            @endif
                             <a href="{{ route('orders.show', $order) }}" class="inline-block border border-[#2E7D32] text-[#2E7D32] hover:bg-[#2E7D32] hover:text-white px-4 py-2 rounded-xl text-sm font-medium transition-colors">
                                 Ver detalle
                             </a>

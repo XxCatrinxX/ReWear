@@ -24,8 +24,10 @@ class SellerController extends Controller
         $activeProductsCount = $user->products()->active()->count();
         $soldProductsCount = $user->products()->where('is_sold', true)->count();
         
-        // Simular ganancias (suma del total de items vendidos por este vendedor)
-        $simulatedEarnings = $user->salesItems()->sum('subtotal');
+        // Ganancias netas (subtotal - 5% comisión - $50 envío por cada ítem vendido)
+        $simulatedEarnings = $user->salesItems()->get()->sum(function ($item) {
+            return max(0, $item->subtotal - ($item->subtotal * 0.05) - 50.00);
+        });
         
         $recentProducts = $user->products()->with('category')->latest()->take(5)->get();
         $recentSales = $user->salesItems()->with('order')->latest()->take(5)->get();

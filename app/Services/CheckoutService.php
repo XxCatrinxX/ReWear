@@ -76,11 +76,15 @@ class CheckoutService
                     'is_sold' => $newStock <= 0,
                 ]);
 
-                // Acreditar el saldo pendiente al vendedor
+                // Acreditar el saldo pendiente al vendedor (descontando 5% de comisión + $50 de envío)
                 $itemSubtotal = $item->unit_price * $item->quantity;
+                $commission   = $itemSubtotal * 0.05;
+                $shippingCost = 50.00; // El envío de $50 MXN corre por cuenta del vendedor
+                $netEarnings  = max(0, $itemSubtotal - $commission - $shippingCost);
+
                 $seller = User::find($product->user_id);
                 if ($seller) {
-                    $seller->increment('pending_balance', $itemSubtotal);
+                    $seller->increment('pending_balance', $netEarnings);
                 }
             }
 

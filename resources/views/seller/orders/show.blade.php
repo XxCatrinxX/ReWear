@@ -8,7 +8,7 @@
     $grossSale   = $order->items->sum('subtotal');
     $commission  = round($grossSale * 0.05, 2);
     $shipping    = 50.00;
-    $netEarnings = round($grossSale - $commission + $shipping, 2);
+    $netEarnings = max(0, round($grossSale - $commission - $shipping, 2));
     $trackingNumber = $order->shipment->tracking_number ?? '—';
     $labelRouteUrl  = route('seller.orders.label', $order);
 @endphp
@@ -124,10 +124,10 @@
                     </div>
                     <div class="flex justify-between text-sm">
                         <span class="text-[#607D8B] flex items-center gap-1">
-                            <i class='bx bx-plus-circle text-[#2E7D32]'></i>
-                            Cobro de envío
+                            <i class='bx bx-minus-circle text-red-400'></i>
+                            Envío (a cargo del vendedor)
                         </span>
-                        <span class="text-[#2E7D32] font-medium">+${{ number_format($shipping, 2) }}</span>
+                        <span class="text-red-500 font-medium">-${{ number_format($shipping, 2) }}</span>
                     </div>
                     <div class="flex justify-between items-center pt-2 border-t border-dashed border-[#E5E7EB]">
                         <span class="font-semibold text-sm text-[#263238]">Total a recibir</span>

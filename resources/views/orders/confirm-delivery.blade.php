@@ -177,13 +177,14 @@
 
         if (code) {
             const decoded = code.data.trim();
-            if (decoded === CONFIRM_URL.trim()) {
+            const orderIdPath = '/orders/{{ $order->id }}/confirm-delivery';
+            if (decoded === CONFIRM_URL.trim() || decoded.includes(orderIdPath)) {
                 document.getElementById('qr-status').textContent = '✅ QR válido detectado. Confirmando entrega…';
                 stopCamera();
                 // Enviar formulario automáticamente
                 const form = document.createElement('form');
                 form.method = 'POST';
-                form.action = CONFIRM_URL;
+                form.action = "{{ route('orders.confirm-delivery.store', $order) }}";
                 const csrf = document.createElement('input');
                 csrf.type  = 'hidden';
                 csrf.name  = '_token';
