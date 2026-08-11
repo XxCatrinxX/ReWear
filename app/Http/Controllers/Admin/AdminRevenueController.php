@@ -9,41 +9,39 @@ use Illuminate\Support\Facades\DB;
 
 class AdminRevenueController extends Controller
 {
-    const COMMISSION_RATE = 0.05; // 5% por venta
+    const COMMISSION_RATE = 0.05;
 
     public function index(Request $request)
     {
-        $period    = $request->input('period', 'month'); // today, week, month, year, custom
-        $status    = $request->input('status', 'all');
-        $dateFrom  = $request->input('date_from');
-        $dateTo    = $request->input('date_to');
+        $period   = $request->input('period', 'month');
+        $status   = $request->input('status', 'all');
+        $dateFrom = $request->input('date_from');
+        $dateTo   = $request->input('date_to');
 
-        // Base query (excluye canceladas)
         $baseQuery = Order::query()->where('status', '!=', 'cancelado');
 
         if ($status !== 'all') {
             $baseQuery->where('status', $status);
         }
 
-        // Aplicar filtro de período
         if ($period === 'custom' && $dateFrom && $dateTo) {
-            $baseQuery->whereBetween(DB::raw('DATE(created_at)'), [$dateFrom, $dateTo]);
+            $baseQuery->whereBetween(DB::raw('DATE(orders.created_at)'), [$dateFrom, $dateTo]);
         } else {
             match ($period) {
-                'today' => $baseQuery->whereDate('created_at', today()),
-                'week'  => $baseQuery->whereBetween('created_at', [now()->startOfWeek(), now()->endOfWeek()]),
-                'year'  => $baseQuery->whereYear('created_at', now()->year),
-                default => $baseQuery->whereMonth('created_at', now()->month)->whereYear('created_at', now()->year),
+                'today' => $baseQuery->whereDate('orders.created_at', today()),
+                'week'  => $baseQuery->whereBetween('orders.created_at', [now()->startOfWeek(), now()->endOfWeek()]),
+                'year'  => $baseQuery->whereYear('orders.created_at', now()->year),
+                default => $baseQuery->whereMonth('orders.created_at', now()->month)->whereYear('orders.created_at', now()->year),
             };
         }
 
-        $orders        = (clone $baseQuery)->latest()->get();
-        $totalSales    = (clone $baseQuery)->sum('total');
+        $orders          = (clone $baseQuery)->with('buyer')->latest()->get();
+        $totalSales      = (clone $baseQuery)->sum('total');
         $totalCommission = $totalSales * self::COMMISSION_RATE;
-        $ordersCount   = (clone $baseQuery)->count();
-        $avgOrder      = $ordersCount > 0 ? $totalSales / $ordersCount : 0;
+        $ordersCount     = (clone $baseQuery)->count();
+        $avgOrder        = $ordersCount > 0 ? $totalSales / $ordersCount : 0;
 
-        // Ganancias por mes (últimos 12 meses) para gráfico
+        // Ganancias por mes (últimos 12 meses)
         $monthlyData = Order::where('status', '!=', 'cancelado')
             ->where('created_at', '>=', now()->subMonths(12)->startOfMonth())
             ->select(
@@ -57,16 +55,33 @@ class AdminRevenueController extends Controller
             ->orderBy('year')->orderBy('month')
             ->get();
 
-        // Top 5 vendedores por comisión generada en el período
-        $topSellers = (clone $baseQuery)
+        // Top 5 vendedores — join via order_items.seller_id (evita problema con soft-delete de products)
+        $topSellersQuery = DB::table('orders')
             ->join('order_items', 'orders.id', '=', 'order_items.order_id')
-            ->join('products', 'order_items.product_id', '=', 'products.id')
-            ->join('users', 'products.user_id', '=', 'users.id')
+            ->join('users', 'order_items.seller_id', '=', 'users.id')
+            ->where('orders.status', '!=', 'cancelado');
+
+        if ($status !== 'all') {
+            $topSellersQuery->where('orders.status', $status);
+        }
+
+        if ($period === 'custom' && $dateFrom && $dateTo) {
+            $topSellersQuery->whereBetween(DB::raw('DATE(orders.created_at)'), [$dateFrom, $dateTo]);
+        } else {
+            match ($period) {
+                'today' => $topSellersQuery->whereDate('orders.created_at', today()),
+                'week'  => $topSellersQuery->whereBetween('orders.created_at', [now()->startOfWeek(), now()->endOfWeek()]),
+                'year'  => $topSellersQuery->whereYear('orders.created_at', now()->year),
+                default => $topSellersQuery->whereMonth('orders.created_at', now()->month)->whereYear('orders.created_at', now()->year),
+            };
+        }
+
+        $topSellers = $topSellersQuery
             ->select(
                 'users.id',
                 'users.name',
-                DB::raw('SUM(orders.total) as total_ventas'),
-                DB::raw('SUM(orders.total) * ' . self::COMMISSION_RATE . ' as comision'),
+                DB::raw('SUM(order_items.subtotal) as total_ventas'),
+                DB::raw('SUM(order_items.subtotal) * ' . self::COMMISSION_RATE . ' as comision'),
                 DB::raw('COUNT(DISTINCT orders.id) as num_ordenes')
             )
             ->groupBy('users.id', 'users.name')

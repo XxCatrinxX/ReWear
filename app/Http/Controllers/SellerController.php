@@ -256,13 +256,13 @@ class SellerController extends Controller
         if (!$order->shipment) {
             $order->shipment()->create([
                 'status'          => 'preparando',
-                'carrier'         => 'ReWear Delivery',
-                'tracking_number' => 'RW-' . strtoupper(\Illuminate\Support\Str::random(10)),
+                'carrier'         => 'FedEx',
+                'tracking_number' => '7489 ' . implode(' ', str_split(substr(str_pad($order->id, 8, '0', STR_PAD_LEFT) . rand(10000000, 99999999), 0, 12), 4)),
             ]);
             $order->load('shipment');
         } elseif (!$order->shipment->tracking_number) {
             $order->shipment->update([
-                'tracking_number' => 'RW-' . strtoupper(\Illuminate\Support\Str::random(10)),
+                'tracking_number' => '7489 ' . implode(' ', str_split(substr(str_pad($order->id, 8, '0', STR_PAD_LEFT) . rand(10000000, 99999999), 0, 12), 4)),
             ]);
         }
 
