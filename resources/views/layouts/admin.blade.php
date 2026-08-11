@@ -61,6 +61,10 @@
                     <span class="ml-auto bg-red-500 text-white text-[10px] font-bold rounded-full px-1.5 py-0.5 min-w-[18px] text-center">{{ $pendingCount }}</span>
                 @endif
             </a>
+            <a href="{{ route('admin.revenue.index') }}" class="flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-xl transition-colors {{ request()->routeIs('admin.revenue.*') ? 'bg-amber-50 text-amber-700' : 'text-[#607D8B] hover:bg-amber-50 hover:text-amber-700' }}">
+                <i class='bx bx-trending-up text-xl'></i>
+                Ganancias
+            </a>
 
             <div class="pt-4 border-t border-[#E5E7EB] mt-4">
                 <a href="{{ route('home') }}" class="flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-xl text-[#2E7D32] bg-[#2E7D32]/10 hover:bg-[#2E7D32]/20 transition-colors">

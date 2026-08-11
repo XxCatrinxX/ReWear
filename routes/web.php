@@ -5,6 +5,7 @@ use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Admin\AdminOrderController;
 use App\Http\Controllers\Admin\AdminProductController;
 use App\Http\Controllers\Admin\AdminReportController;
+use App\Http\Controllers\Admin\AdminRevenueController;
 use App\Http\Controllers\Admin\AdminUserController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\CategoryController;
@@ -165,6 +166,9 @@ Route::middleware(['auth', 'verified', 'admin'])->prefix('admin')->name('admin.'
 
     // Gestión de membresías
     Route::patch('/users/{user}/membership', [AdminUserController::class, 'toggleMembership'])->name('users.membership');
+
+    // Estadísticas de ganancias
+    Route::get('/revenue', [AdminRevenueController::class, 'index'])->name('revenue.index');
 });
 
 require __DIR__.'/auth.php';
