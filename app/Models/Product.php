@@ -96,13 +96,6 @@ class Product extends Model
 
     public function getCoverUrlAttribute(): string
     {
-        if ($this->cover_image) {
-            return asset('storage/' . $this->cover_image);
-        }
-        if ($this->images->isNotEmpty()) {
-            return asset('storage/' . $this->images->first()->image_path);
-        }
-        
         $placeholders = [
             'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80',
             'https://images.unsplash.com/photo-1483985988355-763728e1935b?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80',
@@ -113,7 +106,16 @@ class Product extends Model
             'https://images.unsplash.com/photo-1529139574466-a303027c1d8b?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80',
             'https://images.unsplash.com/photo-1479064555552-3ef4979f8908?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80',
         ];
-        return $placeholders[$this->id % count($placeholders)];
+        $fallback = $placeholders[$this->id % count($placeholders)];
+
+        if ($this->cover_image) {
+            return \App\Helpers\ImageHelper::url($this->cover_image, $fallback);
+        }
+        if ($this->images->isNotEmpty()) {
+            return \App\Helpers\ImageHelper::url($this->images->first()->image_path, $fallback);
+        }
+
+        return $fallback;
     }
 
     public function getFormattedPriceAttribute(): string

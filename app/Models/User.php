@@ -138,10 +138,11 @@ class User extends Authenticatable
      */
     public function getAvatarUrlAttribute(): string
     {
+        $fallback = 'https://ui-avatars.com/api/?name=' . urlencode($this->name) . '&background=6366f1&color=fff&size=128';
         if ($this->avatar) {
-            return asset('storage/' . $this->avatar);
+            return \App\Helpers\ImageHelper::url($this->avatar, $fallback);
         }
-        return 'https://ui-avatars.com/api/?name=' . urlencode($this->name) . '&background=6366f1&color=fff&size=128';
+        return $fallback;
     }
 
     // ─── Relaciones ─────────────────────────────────────────────────────────────
