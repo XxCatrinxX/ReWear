@@ -79,10 +79,18 @@
                     </div>
 
                     <div>
-                        <label class="block text-sm font-medium text-[#263238] mb-1">Marca</label>
-                        <input type="text" name="brand" value="{{ old('brand') }}" placeholder="Ej: Zara, Nike, Genérico" 
-                            class="w-full bg-[#F8FAF7] border-[#E5E7EB] rounded-xl focus:border-[#2E7D32] focus:ring focus:ring-[#2E7D32]/20">
-                    </div>
+    <label class="block text-sm font-medium text-[#263238] mb-1">Marca</label>
+    <select name="brand" class="w-full bg-[#F8FAF7] border-[#E5E7EB] rounded-xl focus:border-[#2E7D32] focus:ring focus:ring-[#2E7D32]/20">
+        <option value="">Selecciona una marca</option>
+        @foreach($brands as $key => $brandName)
+            @php $value = is_string($key) ? $key : $brandName; @endphp
+            <option value="{{ $value }}" {{ old('brand', $product->brand ?? '') == $value ? 'selected' : '' }}>
+                {{ $brandName }}
+            </option>
+        @endforeach
+    </select>
+    @error('brand') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror
+</div>
 
                     <div>
                         <label class="block text-sm font-medium text-[#263238] mb-1">Talla</label>

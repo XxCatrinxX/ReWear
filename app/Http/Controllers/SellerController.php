@@ -72,9 +72,10 @@ class SellerController extends Controller
 
     $conditions = Product::$conditions;
     $sizes      = Product::$sizes;
-    $colors     = Product::$colors; // <-- AGREGADO
+    $colors     = Product::$colors;
+    $brands     = Product::$brands;
     
-    return view('seller.products.create', compact('categories', 'conditions', 'sizes', 'colors'));
+    return view('seller.products.create', compact('categories', 'conditions', 'sizes', 'colors', 'brands'));
 }
 
     /**
@@ -120,9 +121,10 @@ class SellerController extends Controller
     $categories = Category::active()->roots()->with('children')->get();
     $conditions = Product::$conditions;
     $sizes      = Product::$sizes;
-    $colors     = Product::$colors; // <-- AGREGADO
+    $colors     = Product::$colors;
+    $brands     = Product::$brands;
     
-    return view('seller.products.edit', compact('product', 'categories', 'conditions', 'sizes', 'colors'));
+    return view('seller.products.edit', compact('product', 'categories', 'conditions', 'sizes', 'colors', 'brands'));
 }
 
     /**

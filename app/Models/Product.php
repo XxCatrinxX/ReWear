@@ -87,6 +87,27 @@ class Product extends Model
         'Multicolor' => 'linear-gradient(45deg, #f06, #3f51b5)',
     ];
 
+    // ------ Marcas ---------------------------------------------------------------
+    public static array $brands = [
+        'Zara',
+        'HM' => 'H&M',
+        'Nike',
+        'Adidas',
+        'Puma',
+        'Levi\'s',
+        'Pull&Bear',
+        'Bershka',
+        'Stradivarius',
+        'Mango',
+        'Shein',
+        'Forever 21',
+        'Tommy Hilfiger',
+        'Calvin Klein',
+        'Gucci',
+        'Sin marca / Genérico',
+        'Otra'
+    ];
+
     // ─── Accessors ───────────────────────────────────────────────────────────────
 
     public function getConditionLabelAttribute(): string
