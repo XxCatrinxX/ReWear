@@ -146,9 +146,21 @@
                 </div>
 
                 <!-- Mobile menu button -->
-                <div class="flex items-center md:hidden gap-4">
+                <div class="flex items-center md:hidden gap-3">
                     @auth
-                        <a href="{{ route('cart.index') }}" class="p-2 text-[#607D8B] relative">
+                        <!-- Notificaciones Móvil / PWA -->
+                        @php $unreadNotifsMobile = auth()->user()->unreadNotificationsCount(); @endphp
+                        <a href="{{ route('notifications.index') }}" class="p-1.5 text-[#607D8B] hover:text-[#2E7D32] transition-colors relative" title="Notificaciones">
+                            <i class='bx bx-bell text-2xl'></i>
+                            @if($unreadNotifsMobile > 0)
+                                <span class="absolute top-0 right-0 w-4 h-4 bg-red-500 text-white text-[9px] font-bold flex items-center justify-center rounded-full border border-white animate-pulse">
+                                    {{ $unreadNotifsMobile > 99 ? '99+' : $unreadNotifsMobile }}
+                                </span>
+                            @endif
+                        </a>
+
+                        <!-- Carrito Móvil -->
+                        <a href="{{ route('cart.index') }}" class="p-1.5 text-[#607D8B] relative">
                             <i class='bx bx-shopping-bag text-2xl'></i>
                             @php $cartCountMobile = auth()->user()->cart ? auth()->user()->cart->items->sum('quantity') : 0; @endphp
                             @if($cartCountMobile > 0)
@@ -176,11 +188,6 @@
 
         <!-- Mobile Menu -->
         <div x-show="mobileMenuOpen" style="display:none;" class="md:hidden border-t border-[#E5E7EB] bg-white absolute w-full left-0 shadow-card">
-            <div class="px-4 py-2 space-y-1">
-                <a href="{{ route('catalog') }}" class="block px-3 py-3 rounded-md text-base font-medium text-[#263238] hover:bg-[#F8FAF7] hover:text-[#2E7D32]">Catálogo</a>
-                <a href="{{ route('catalog', ['sort' => 'latest']) }}" class="block px-3 py-3 rounded-md text-base font-medium text-[#263238] hover:bg-[#F8FAF7] hover:text-[#2E7D32]">Novedades</a>
-                <a href="{{ route('home') }}#como-funciona" class="block px-3 py-3 rounded-md text-base font-medium text-[#263238] hover:bg-[#F8FAF7] hover:text-[#2E7D32]">¿Cómo Funciona?</a>
-            </div>
             @auth
                 <div class="pt-4 pb-3 border-t border-[#E5E7EB]">
                     <div class="flex items-center px-4 mb-3">
@@ -194,6 +201,17 @@
                     </div>
                     <div class="space-y-1 px-2">
                         <a href="{{ route('dashboard') }}" class="block px-3 py-2 rounded-md text-base font-medium text-[#607D8B] hover:bg-[#F8FAF7] hover:text-[#2E7D32]">Mi Panel</a>
+                        <a href="{{ route('notifications.index') }}" class="flex items-center justify-between px-3 py-2 rounded-md text-base font-medium text-[#607D8B] hover:bg-[#F8FAF7] hover:text-[#2E7D32]">
+                            <span>Notificaciones</span>
+                            @if(auth()->user()->unreadNotificationsCount() > 0)
+                                <span class="bg-red-500 text-white text-xs font-bold px-2 py-0.5 rounded-full">{{ auth()->user()->unreadNotificationsCount() }}</span>
+                            @endif
+                        </a>
+                        <a href="{{ route('orders.index') }}" class="block px-3 py-2 rounded-md text-base font-medium text-[#607D8B] hover:bg-[#F8FAF7] hover:text-[#2E7D32]">Mis Compras</a>
+                        @if(auth()->user()->isSeller())
+                            <a href="{{ route('seller.orders.index') }}" class="block px-3 py-2 rounded-md text-base font-medium text-[#607D8B] hover:bg-[#F8FAF7] hover:text-[#2E7D32]">Mis Ventas</a>
+                            <a href="{{ route('seller.wallet.index') }}" class="block px-3 py-2 rounded-md text-base font-medium text-[#607D8B] hover:bg-[#F8FAF7] hover:text-[#2E7D32]">Mi Billetera</a>
+                        @endif
                         <a href="{{ route('seller.products.create') }}" class="block px-3 py-2 rounded-md text-base font-medium text-[#D4A373] hover:bg-[#F8FAF7]">Vender Ropa</a>
                         <a href="{{ route('favorites.index') }}" class="block px-3 py-2 rounded-md text-base font-medium text-[#607D8B] hover:bg-[#F8FAF7]">Favoritos</a>
                         <a href="{{ route('profile.edit') }}" class="block px-3 py-2 rounded-md text-base font-medium text-[#607D8B] hover:bg-[#F8FAF7]">Configuración</a>
