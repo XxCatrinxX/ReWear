@@ -90,8 +90,6 @@
 
                 @auth
                     @if(auth()->id() !== $product->user_id)
-                @auth
-                    @if(auth()->id() !== $product->user_id)
                         <form action="{{ route('products.questions.store', $product) }}" method="POST" class="mb-8 w-full max-w-full">
                             @csrf
                             <div class="flex flex-col sm:flex-row gap-2 w-full max-w-full">
