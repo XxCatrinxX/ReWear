@@ -85,6 +85,15 @@ class CheckoutService
                 $seller = User::find($product->user_id);
                 if ($seller) {
                     $seller->increment('pending_balance', $netEarnings);
+
+                    // Notificación de venta al vendedor
+                    \App\Services\NotificationService::send(
+                        $seller->id,
+                        '¡Felicidades, realizaste una venta! 🎉',
+                        "Un comprador adquirió tu prenda '{$product->title}' por $" . number_format($itemSubtotal, 2) . ". Ganancia neta: $" . number_format($netEarnings, 2),
+                        route('seller.orders.show', $order),
+                        'sale'
+                    );
                 }
             }
 

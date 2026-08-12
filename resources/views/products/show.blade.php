@@ -90,12 +90,14 @@
 
                 @auth
                     @if(auth()->id() !== $product->user_id)
-                        <form action="{{ route('products.questions.store', $product) }}" method="POST" class="mb-8">
+                @auth
+                    @if(auth()->id() !== $product->user_id)
+                        <form action="{{ route('products.questions.store', $product) }}" method="POST" class="mb-8 w-full max-w-full">
                             @csrf
-                            <div class="relative">
+                            <div class="flex flex-col sm:flex-row gap-2 w-full max-w-full">
                                 <input type="text" name="question" placeholder="¿Tiene detalles de uso? ¿Es horma grande?" required
-                                    class="w-full pl-4 pr-32 py-3.5 bg-gray-50 border border-gray-200 rounded-2xl text-sm focus:bg-white focus:ring-2 focus:ring-[#2E7D32] focus:border-transparent transition">
-                                <button type="submit" class="absolute right-2 top-2 bottom-2 bg-[#2E7D32] hover:bg-[#1B5E20] text-white px-5 rounded-xl font-medium text-xs flex items-center gap-1.5 transition">
+                                    class="flex-1 min-w-0 px-4 py-3 bg-gray-50 border border-gray-200 rounded-2xl text-sm focus:bg-white focus:ring-2 focus:ring-[#2E7D32] focus:border-transparent transition">
+                                <button type="submit" class="bg-[#2E7D32] hover:bg-[#1B5E20] text-white px-5 py-3 rounded-2xl font-bold text-xs flex items-center justify-center gap-1.5 transition shrink-0">
                                     <span>Preguntar</span> <i class='bx bx-send'></i>
                                 </button>
                             </div>
@@ -112,33 +114,33 @@
                 <!-- Chat list -->
                 <div class="space-y-4">
                     @forelse($product->questions as $q)
-                        <div class="p-4 rounded-2xl bg-gray-50/50 border border-gray-100">
-                            <div class="flex items-start gap-3">
+                        <div class="p-4 rounded-2xl bg-gray-50/50 border border-gray-100 overflow-hidden max-w-full">
+                            <div class="flex items-start gap-3 max-w-full">
                                 <div class="w-8 h-8 rounded-full bg-gray-200 text-gray-700 font-bold flex items-center justify-center text-xs shrink-0">
                                     {{ strtoupper(substr($q->user->name, 0, 1)) }}
                                 </div>
-                                <div class="flex-1">
-                                    <div class="flex items-center gap-2">
-                                        <span class="font-bold text-xs text-gray-900">{{ $q->user->name }}</span>
+                                <div class="flex-1 min-w-0 max-w-full">
+                                    <div class="flex items-center gap-2 flex-wrap">
+                                        <span class="font-bold text-xs text-gray-900 truncate max-w-[150px] sm:max-w-none">{{ $q->user->name }}</span>
                                         <span class="text-[10px] text-gray-400">• {{ $q->created_at->diffForHumans() }}</span>
                                     </div>
-                                    <p class="text-xs text-gray-600 mt-1">{{ $q->question }}</p>
+                                    <p class="text-xs text-gray-600 mt-1 break-words">{{ $q->question }}</p>
 
                                     @if($q->answer)
-                                        <div class="mt-3 pl-4 border-l-2 border-[#2E7D32] bg-white p-3 rounded-r-xl border-y border-r border-gray-100">
+                                        <div class="mt-3 pl-4 border-l-2 border-[#2E7D32] bg-white p-3 rounded-r-xl border-y border-r border-gray-100 break-words">
                                             <div class="flex items-center gap-1.5 mb-1">
                                                 <span class="font-bold text-[10px] text-[#2E7D32] bg-emerald-50 px-2 py-0.5 rounded-md">VENDEDOR</span>
                                                 <span class="text-[10px] text-gray-400">• {{ $q->answered_at?->diffForHumans() }}</span>
                                             </div>
-                                            <p class="text-xs font-medium text-gray-800">{{ $q->answer }}</p>
+                                            <p class="text-xs font-medium text-gray-800 break-words">{{ $q->answer }}</p>
                                         </div>
                                     @elseif(auth()->check() && auth()->id() === $product->user_id)
-                                        <form action="{{ route('questions.answer', $q) }}" method="POST" class="mt-3">
+                                        <form action="{{ route('questions.answer', $q) }}" method="POST" class="mt-3 w-full max-w-full">
                                             @csrf
-                                            <div class="flex gap-2">
+                                            <div class="flex flex-col sm:flex-row gap-2 w-full max-w-full">
                                                 <input type="text" name="answer" placeholder="Escribe la respuesta..." required
-                                                    class="flex-1 px-3 py-1.5 bg-white border border-gray-200 rounded-xl text-xs focus:ring-1 focus:ring-[#2E7D32]">
-                                                <button type="submit" class="bg-[#2E7D32] text-white px-3 py-1.5 rounded-xl text-xs font-semibold hover:bg-[#1B5E20] transition">
+                                                    class="flex-1 min-w-0 px-3 py-2 bg-white border border-gray-200 rounded-xl text-xs focus:ring-1 focus:ring-[#2E7D32]">
+                                                <button type="submit" class="bg-[#2E7D32] text-white px-4 py-2 rounded-xl text-xs font-semibold hover:bg-[#1B5E20] transition shrink-0">
                                                     Responder
                                                 </button>
                                             </div>

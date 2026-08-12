@@ -90,6 +90,19 @@
                             @endif
                         </a>
 
+                        <!-- Notificaciones -->
+                        @php
+                            $unreadNotifs = auth()->user()->unreadNotificationsCount();
+                        @endphp
+                        <a href="{{ route('notifications.index') }}" class="p-2 text-[#607D8B] hover:text-[#2E7D32] transition-colors relative" title="Notificaciones">
+                            <i class='bx bx-bell text-2xl'></i>
+                            @if($unreadNotifs > 0)
+                                <span class="absolute top-0 right-0 w-5 h-5 bg-red-500 text-white text-[10px] font-bold flex items-center justify-center rounded-full border-2 border-white animate-pulse">
+                                    {{ $unreadNotifs > 99 ? '99+' : $unreadNotifs }}
+                                </span>
+                            @endif
+                        </a>
+
                         <!-- User Dropdown -->
                         <div class="relative ml-2" x-data="{ open: false }" @click.outside="open = false">
                             <button @click="open = !open" class="flex items-center gap-2 focus:outline-none">
@@ -103,6 +116,12 @@
                                 </div>
                                 
                                 <a href="{{ route('dashboard') }}" class="block px-4 py-2.5 text-sm text-[#607D8B] hover:bg-[#F8FAF7] hover:text-[#2E7D32]"><i class='bx bx-grid-alt mr-2'></i> Mi Panel</a>
+                                <a href="{{ route('notifications.index') }}" class="flex items-center justify-between px-4 py-2.5 text-sm text-[#607D8B] hover:bg-[#F8FAF7] hover:text-[#2E7D32]">
+                                    <span><i class='bx bx-bell mr-2'></i> Notificaciones</span>
+                                    @if($unreadNotifs > 0)
+                                        <span class="bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full">{{ $unreadNotifs }}</span>
+                                    @endif
+                                </a>
                                 <a href="{{ route('orders.index') }}" class="block px-4 py-2.5 text-sm text-[#607D8B] hover:bg-[#F8FAF7] hover:text-[#2E7D32]"><i class='bx bx-package mr-2'></i> Mis Compras</a>
                                 @if(auth()->user()->isSeller())
                                     <a href="{{ route('seller.orders.index') }}" class="block px-4 py-2.5 text-sm text-[#607D8B] hover:bg-[#F8FAF7] hover:text-[#2E7D32]"><i class='bx bx-store-alt mr-2'></i> Mis Ventas</a>

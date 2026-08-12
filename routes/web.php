@@ -58,6 +58,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/profile/become-seller', [ProfileController::class, 'becomeSeller'])->name('profile.become-seller.store');
     Route::post('/profile/address', [ProfileController::class, 'storeAddress'])->name('addresses.store');
 
+    // Notificaciones del Sistema
+    Route::get('/notifications', [\App\Http\Controllers\NotificationController::class, 'index'])->name('notifications.index');
+    Route::post('/notifications/{notification}/read', [\App\Http\Controllers\NotificationController::class, 'read'])->name('notifications.read');
+    Route::post('/notifications/read-all', [\App\Http\Controllers\NotificationController::class, 'readAll'])->name('notifications.read-all');
+
     // Métodos Financieros (Tarjetas y Cuentas Bancarias)
     Route::post('/profile/payment-methods', [\App\Http\Controllers\UserFinancialMethodsController::class, 'storePaymentMethod'])->name('profile.payment-methods.store');
     Route::delete('/profile/payment-methods/{paymentMethod}', [\App\Http\Controllers\UserFinancialMethodsController::class, 'destroyPaymentMethod'])->name('profile.payment-methods.destroy');

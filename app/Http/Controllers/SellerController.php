@@ -239,6 +239,15 @@ class SellerController extends Controller
                 'shipped_at' => now(),
             ]);
         }
+
+        // Notificación al comprador
+        \App\Services\NotificationService::send(
+            $order->buyer_id,
+            '¡Tu pedido ha sido enviado! 🚚',
+            "Tu compra #{$order->order_number} ya va en camino con paquetería FedEx. Guía: " . ($order->shipment->tracking_number ?? 'N/A'),
+            route('orders.show', $order),
+            'shipment'
+        );
         
         return back()->with('success', 'Pedido marcado como enviado. Imprime la etiqueta de envío con el código QR.');
     }

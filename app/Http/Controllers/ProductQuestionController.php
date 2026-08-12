@@ -20,11 +20,20 @@ class ProductQuestionController extends Controller
             'question.max'      => 'La pregunta no puede exceder los 500 caracteres.',
         ]);
 
-        ProductQuestion::create([
+        $q = ProductQuestion::create([
             'product_id' => $product->id,
             'user_id'    => $request->user()->id,
             'question'   => $request->input('question'),
         ]);
+
+        // Notificación al vendedor
+        \App\Services\NotificationService::send(
+            $product->user_id,
+            'Nueva pregunta en tu prenda ❓',
+            "{$request->user()->name} preguntó sobre '{$product->title}': \"{$q->question}\"",
+            route('products.show', $product),
+            'question'
+        );
 
         return back()->with('success', '¡Tu pregunta ha sido enviada al vendedor!');
     }
@@ -49,6 +58,15 @@ class ProductQuestionController extends Controller
             'answer'      => $request->input('answer'),
             'answered_at' => now(),
         ]);
+
+        // Notificación al comprador/usuario que preguntó
+        \App\Services\NotificationService::send(
+            $question->user_id,
+            'El vendedor respondió tu pregunta 💬',
+            "El vendedor de '{$question->product->title}' respondió: \"{$question->answer}\"",
+            route('products.show', $question->product),
+            'answer'
+        );
 
         return back()->with('success', '¡Respuesta publicada con éxito!');
     }

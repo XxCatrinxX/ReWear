@@ -172,6 +172,16 @@ class User extends Authenticatable
         return $this->hasMany(Favorite::class);
     }
 
+    public function notifications(): HasMany
+    {
+        return $this->hasMany(Notification::class)->latest();
+    }
+
+    public function unreadNotificationsCount(): int
+    {
+        return $this->notifications()->whereNull('read_at')->count();
+    }
+
     public function addresses(): HasMany
     {
         return $this->hasMany(Address::class);
