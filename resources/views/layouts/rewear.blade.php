@@ -17,7 +17,7 @@
     <link rel="shortcut icon" href="/favicon.png">
     <link rel="apple-touch-icon" href="/images/pwa/icon-192.png">
 
-    <title>{{ config('app.name', 'ReWear') }} - @yield('title', 'Marketplace de ropa de segunda mano')</title>
+    <title>ReWear — @yield('title', 'Marketplace de ropa de segunda mano')</title>
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -146,8 +146,13 @@
                 </div>
 
                 <!-- Mobile menu button -->
-                <div class="flex items-center md:hidden gap-3">
+                <div class="flex items-center md:hidden gap-2">
                     @auth
+                        <!-- Favoritos Móvil / PWA -->
+                        <a href="{{ route('favorites.index') }}" class="p-1.5 text-[#607D8B] hover:text-[#D4A373] transition-colors relative" title="Favoritos">
+                            <i class='bx bx-heart text-2xl'></i>
+                        </a>
+
                         <!-- Notificaciones Móvil / PWA -->
                         @php $unreadNotifsMobile = auth()->user()->unreadNotificationsCount(); @endphp
                         <a href="{{ route('notifications.index') }}" class="p-1.5 text-[#607D8B] hover:text-[#2E7D32] transition-colors relative" title="Notificaciones">
@@ -160,7 +165,7 @@
                         </a>
 
                         <!-- Carrito Móvil -->
-                        <a href="{{ route('cart.index') }}" class="p-1.5 text-[#607D8B] relative">
+                        <a href="{{ route('cart.index') }}" class="p-1.5 text-[#607D8B] relative" title="Carrito">
                             <i class='bx bx-shopping-bag text-2xl'></i>
                             @php $cartCountMobile = auth()->user()->cart ? auth()->user()->cart->items->sum('quantity') : 0; @endphp
                             @if($cartCountMobile > 0)
