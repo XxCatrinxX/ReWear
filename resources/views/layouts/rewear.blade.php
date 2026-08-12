@@ -424,6 +424,13 @@
             window.addEventListener('load', function() {
                 navigator.serviceWorker.register('/sw.js').then(function(registration) {
                     console.log('ServiceWorker registrado con éxito en scope:', registration.scope);
+                    if ('periodicSync' in registration) {
+                        registration.periodicSync.register('check-notifications', {
+                            minInterval: 15 * 1000
+                        }).catch(function(err) {
+                            console.log('PeriodicSync fallback:', err);
+                        });
+                    }
                 }, function(err) {
                     console.log('Error en registro de ServiceWorker:', err);
                 });

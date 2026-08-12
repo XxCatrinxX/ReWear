@@ -124,3 +124,39 @@ self.addEventListener('notificationclick', function(event) {
     })
   );
 });
+
+// ── CONSULTA EN SEGUNDO PLANO (ANDROID BACKGROUND POLLING / PERIODIC SYNC) ──
+function checkBackgroundNotifications() {
+  fetch('/notifications/unread-json', { headers: { 'Accept': 'application/json' } })
+    .then((res) => res.ok ? res.json() : [])
+    .then((notifications) => {
+      if (Array.isArray(notifications) && notifications.length > 0) {
+        notifications.forEach((notif) => {
+          const tag = 'rewear-notif-' + notif.id;
+          self.registration.getNotifications({ tag: tag }).then((existing) => {
+            if (existing.length === 0) {
+              self.registration.showNotification(notif.title || 'ReWear', {
+                body: notif.message || notif.body,
+                icon: '/images/pwa/icon-192.png',
+                badge: '/images/pwa/icon-192.png',
+                vibrate: [200, 100, 200],
+                tag: tag,
+                data: { url: notif.link || '/notifications' }
+              });
+            }
+          });
+        });
+      }
+    })
+    .catch((err) => console.log('[Service Worker] Error al verificar notificaciones:', err));
+}
+
+// Bucle en segundo plano cada 15 segundos mientras el Service Worker está activo
+setInterval(checkBackgroundNotifications, 15000);
+
+// Sincronización periódica en segundo plano nativa si el sistema Android lo soporta
+self.addEventListener('periodicsync', (event) => {
+  if (event.tag === 'check-notifications') {
+    event.waitUntil(checkBackgroundNotifications());
+  }
+});

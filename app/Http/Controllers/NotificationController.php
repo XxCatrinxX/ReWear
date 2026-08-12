@@ -43,4 +43,22 @@ class NotificationController extends Controller
         $request->user()->notifications()->whereNull('read_at')->update(['read_at' => now()]);
         return back()->with('success', 'Todas las notificaciones se han marcado como leídas.');
     }
+
+    /**
+     * Retorna las notificaciones no leídas en JSON para el Service Worker de segundo plano.
+     */
+    public function unreadJson(Request $request)
+    {
+        if (!$request->user()) {
+            return response()->json([]);
+        }
+
+        $unread = $request->user()->notifications()
+            ->whereNull('read_at')
+            ->latest()
+            ->take(5)
+            ->get();
+
+        return response()->json($unread);
+    }
 }
