@@ -402,7 +402,23 @@
 
     @stack('scripts')
 
-    <!-- Registro de Service Worker PWA -->
+    @auth
+        @php
+            $latestUnread = auth()->user()->notifications()->whereNull('read_at')->latest()->first();
+        @endphp
+        @if($latestUnread)
+            <script>
+                window.LATEST_UNREAD_NOTIFICATION = {
+                    id: {{ $latestUnread->id }},
+                    title: @json($latestUnread->title),
+                    body: @json($latestUnread->message),
+                    url: @json($latestUnread->link ?? route('notifications.index'))
+                };
+            </script>
+        @endif
+    @endauth
+
+    <!-- Registro de Service Worker PWA y Notificaciones Nativas en Android -->
     <script>
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', function() {
@@ -413,6 +429,45 @@
                 });
             });
         }
+
+        // Solicitar permisos de Notificación Nativa en Android / Navegador
+        document.addEventListener('DOMContentLoaded', function() {
+            if ('Notification' in window) {
+                if (Notification.permission !== 'granted' && Notification.permission !== 'denied') {
+                    // Solicitar permiso al hacer click o interactuar
+                    window.addEventListener('click', function requestPermOnce() {
+                        Notification.requestPermission();
+                        window.removeEventListener('click', requestPermOnce);
+                    }, { once: true });
+                }
+            }
+
+            // Disparar Notificación Nativa en la barra superior de Android si hay una no leída
+            if (window.LATEST_UNREAD_NOTIFICATION && 'Notification' in window && Notification.permission === 'granted') {
+                const notif = window.LATEST_UNREAD_NOTIFICATION;
+                const key = 'rewear_notif_shown_' + notif.id;
+                if (!localStorage.getItem(key)) {
+                    localStorage.setItem(key, 'true');
+                    if ('serviceWorker' in navigator) {
+                        navigator.serviceWorker.ready.then(function(reg) {
+                            reg.showNotification(notif.title, {
+                                body: notif.body,
+                                icon: '/images/pwa/icon-192.png',
+                                badge: '/images/pwa/icon-192.png',
+                                vibrate: [200, 100, 200],
+                                tag: 'rewear-notif-' + notif.id,
+                                data: { url: notif.url }
+                            });
+                        });
+                    } else {
+                        new Notification(notif.title, {
+                            body: notif.body,
+                            icon: '/images/pwa/icon-192.png'
+                        });
+                    }
+                }
+            }
+        });
 
         // Manejo del banner de instalación PWA en Android
         let deferredPrompt;
