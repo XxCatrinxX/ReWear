@@ -178,6 +178,7 @@ Route::middleware(['auth', 'verified', 'admin'])->prefix('admin')->name('admin.'
 
     // Estadísticas de ganancias
     Route::get('/revenue', [AdminRevenueController::class, 'index'])->name('revenue.index');
+    Route::get('/revenue/export-pdf', [AdminRevenueController::class, 'exportPdf'])->name('revenue.export-pdf');
 });
 
 require __DIR__.'/auth.php';

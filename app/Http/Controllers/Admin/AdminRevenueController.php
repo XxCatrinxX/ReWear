@@ -95,4 +95,43 @@ class AdminRevenueController extends Controller
             'period', 'status', 'dateFrom', 'dateTo'
         ));
     }
+
+    /**
+     * Genera la vista imprimible/PDF del reporte de ganancias y ventas.
+     */
+    public function exportPdf(Request $request)
+    {
+        $period   = $request->input('period', 'month');
+        $status   = $request->input('status', 'all');
+        $dateFrom = $request->input('date_from');
+        $dateTo   = $request->input('date_to');
+
+        $baseQuery = Order::query()->where('status', '!=', 'cancelado');
+
+        if ($status !== 'all') {
+            $baseQuery->where('status', $status);
+        }
+
+        if ($period === 'custom' && $dateFrom && $dateTo) {
+            $baseQuery->whereBetween(DB::raw('DATE(orders.created_at)'), [$dateFrom, $dateTo]);
+        } else {
+            match ($period) {
+                'today' => $baseQuery->whereDate('orders.created_at', today()),
+                'week'  => $baseQuery->whereBetween('orders.created_at', [now()->startOfWeek(), now()->endOfWeek()]),
+                'year'  => $baseQuery->whereYear('orders.created_at', now()->year),
+                default => $baseQuery->whereMonth('orders.created_at', now()->month)->whereYear('orders.created_at', now()->year),
+            };
+        }
+
+        $orders          = (clone $baseQuery)->with(['buyer', 'items.product'])->latest()->get();
+        $totalSales      = (clone $baseQuery)->sum('total');
+        $totalCommission = $totalSales * self::COMMISSION_RATE;
+        $ordersCount     = (clone $baseQuery)->count();
+        $avgOrder        = $ordersCount > 0 ? $totalSales / $ordersCount : 0;
+
+        return view('admin.revenue.pdf', compact(
+            'orders', 'totalSales', 'totalCommission',
+            'ordersCount', 'avgOrder', 'period', 'status', 'dateFrom', 'dateTo'
+        ));
+    }
 }

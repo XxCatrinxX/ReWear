@@ -7,9 +7,15 @@
             <h1 class="font-outfit text-3xl font-bold text-[#263238]">Ganancias de la Plataforma</h1>
             <p class="text-[#607D8B] mt-1">Comisión del 5% sobre ventas completadas.</p>
         </div>
-        <span class="inline-flex items-center gap-2 bg-amber-100 text-amber-800 text-xs font-semibold px-3 py-1.5 rounded-full self-start">
-            <i class='bx bx-percent'></i> Comisión: 5% por venta
-        </span>
+        <div class="flex items-center gap-3">
+            <a href="{{ route('admin.revenue.export-pdf', ['period' => $period, 'status' => $status, 'date_from' => $dateFrom, 'date_to' => $dateTo]) }}" target="_blank"
+               class="inline-flex items-center gap-2 bg-[#2E7D32] hover:bg-[#1B5E20] text-white text-xs font-bold px-4 py-2.5 rounded-xl transition shadow-sm">
+                <i class='bx bxs-file-pdf text-base'></i> Exportar PDF / Reporte
+            </a>
+            <span class="inline-flex items-center gap-2 bg-amber-100 text-amber-800 text-xs font-semibold px-3 py-2 rounded-xl">
+                <i class='bx bx-percent'></i> Comisión: 5%
+            </span>
+        </div>
     </div>
 </div>
 
