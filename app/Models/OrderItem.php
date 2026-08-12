@@ -23,6 +23,16 @@ class OrderItem extends Model
         'subtotal'   => 'decimal:2',
     ];
 
+    public function getFormattedUnitPriceAttribute(): string
+    {
+        return '$' . number_format((float) $this->unit_price, 2);
+    }
+
+    public function getFormattedSubtotalAttribute(): string
+    {
+        return '$' . number_format((float) $this->subtotal, 2);
+    }
+
     public function order(): BelongsTo
     {
         return $this->belongsTo(Order::class);

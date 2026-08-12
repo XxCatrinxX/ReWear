@@ -23,8 +23,8 @@
             @csrf
             @method('PATCH')
             <select name="status" class="bg-[#F8FAF7] border-[#E5E7EB] rounded-lg py-1.5 pl-3 pr-8 text-sm font-medium text-[#263238] focus:border-[#2E7D32] focus:ring focus:ring-[#2E7D32]/20">
-                @foreach($statuses as $key => $label)
-                    <option value="{{ $key }}" {{ $order->status == $key ? 'selected' : '' }}>{{ $label }}</option>
+                @foreach($statuses as $key => $data)
+                    <option value="{{ $key }}" {{ $order->status == $key ? 'selected' : '' }}>{{ $data['label'] }}</option>
                 @endforeach
             </select>
             <button type="submit" class="bg-[#2E7D32] text-white px-3 py-1.5 rounded-lg text-sm font-medium hover:bg-[#1B5E20] transition-colors">

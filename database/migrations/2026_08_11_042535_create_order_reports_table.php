@@ -13,6 +13,13 @@ return new class extends Migration
     {
         Schema::create('order_reports', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('order_id')->constrained()->onDelete('cascade');
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->string('type')->default('envio'); // envio, producto, otro
+            $table->string('reason');
+            $table->text('description');
+            $table->enum('status', ['pendiente', 'en_revision', 'resuelto', 'desestimado'])->default('pendiente');
+            $table->text('admin_notes')->nullable();
             $table->timestamps();
         });
     }

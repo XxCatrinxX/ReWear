@@ -20,8 +20,8 @@
             <input type="hidden" name="search" value="{{ request('search') }}">
             <select name="status" onchange="this.form.submit()" class="w-full bg-white border border-[#E5E7EB] rounded-full py-2 px-4 text-sm focus:border-[#2E7D32] focus:ring focus:ring-[#2E7D32]/20">
                 <option value="">Todos los estados</option>
-                @foreach($statuses as $key => $label)
-                    <option value="{{ $key }}" {{ request('status') == $key ? 'selected' : '' }}>{{ $label }}</option>
+                @foreach($statuses as $key => $data)
+                    <option value="{{ $key }}" {{ request('status') == $key ? 'selected' : '' }}>{{ $data['label'] }}</option>
                 @endforeach
             </select>
         </form>
